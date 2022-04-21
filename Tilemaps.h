@@ -19,7 +19,6 @@ class Tilemap{
 
         //Tilemap instance
         vector<vector<vector<BaseCharacter &>>> tilemap;
-        vector<int> 
 
         int width;
         int height;
