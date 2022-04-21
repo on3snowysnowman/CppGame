@@ -20,6 +20,8 @@ class Tilemap{
         //Tilemap instance
         vector<vector<vector<BaseCharacter &>>> tilemap;
 
+        vector<string> string_vector;
+
         int width;
         int height;
 
