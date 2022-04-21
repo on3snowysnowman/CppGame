@@ -1,0 +1,2 @@
+Int{White_r:255}
+Vector<String>{Colors:White,Blue,Red}
