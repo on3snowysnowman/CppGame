@@ -31,7 +31,6 @@ void add_color_menu(Renderer &renderer, DisplayTool &display_tool){
         if(get<List>(input_data.at(1)).content.at(0).at(1).size() > 0
             && get<List>(input_data.at(1)).content.at(1).at(1).size() > 0
             && get<List>(input_data.at(1)).content.at(2).at(1).size() > 0){
-            renderer.add_content("Settings/Modify Colors/Add New Color\n\n");
 
             renderer.add_color("Sample", vector<int>{stoi(get<List>(input_data.at(1)).content.at(0).at(1)),
                                                 stoi(get<List>(input_data.at(1)).content.at(1).at(1)),
@@ -240,8 +239,7 @@ void terminal_edit_menu(Renderer &renderer, DisplayTool &display_tool){
                     renderer.add_new_line();
 
                     renderer.add_content("Select New ", false);
-                    renderer.add_content(choice.substr(7, choice.length()), false);
-                    renderer.add_content(":");
+                    renderer.add_content(choice);
 
                     second_last_index = display_tool.dynamic_selection(second_selections, second_last_index.first, "");
 
