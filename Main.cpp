@@ -1,8 +1,6 @@
 #include "ColorFunctions.h"
 #include "Player.h"
-#include "tilemap.h"
-#include "Classes.h"
-#include <Camera.h>
+#include <iostream>
 
 
 void settings(Renderer &renderer, DisplayTool &display_tool){
@@ -17,7 +15,7 @@ void settings(Renderer &renderer, DisplayTool &display_tool){
         renderer.add_content("Settings");
         renderer.add_new_line();
 
-        last_index = display_tool.dynamic_selection(&selections, last_index.first, "Select One of the Following");
+        last_index = display_tool.dynamic_selection(selections, last_index.first, "Select One of the Following");
 
         if(last_index.second == 1){
 
@@ -52,7 +50,7 @@ void settings(Renderer &renderer, DisplayTool &display_tool){
 
                     clear();
                     renderer.clear_content();
-                    last_index = display_tool.dynamic_input(&input_data, last_index, vector<int> {4}, "Press Enter to Edit");
+                    last_index = display_tool.dynamic_input(input_data, last_index, vector<int> {4}, "Press Enter to Edit");
 
                     //User selected the escape key
                     if(last_index.first == -1){
@@ -73,9 +71,6 @@ int main()
     
     Renderer renderer;
     DisplayTool display_tool(&renderer);
-    FloorTile floor_tile = FloorTile();
-    Tilemap tilemap(10, 15, floor_tile);
-    Camera camera();
 
     Player player("Joel", 10, 10);
 
@@ -93,13 +88,15 @@ int main()
         display_tool.display_meter(player.health, player.health_max, "Health", vector<string>{"Red", "Orange", "Yellow", "Green"});
         renderer.add_new_line(2);
 
-        last_index = display_tool.dynamic_selection(&selections, last_index.first);
+        last_index = display_tool.dynamic_selection(selections, last_index.first);
 
         if(last_index.second == 1){
 
             string choice = selections.content.at(last_index.first);
 
             if(choice == "Start Game"){
+                
+                Player player("Joel", 10, 10);
 
             }
 
@@ -125,7 +122,7 @@ int main()
             }
 
         }
-        
+    
     }
 
     

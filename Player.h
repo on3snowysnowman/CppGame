@@ -1,9 +1,8 @@
 #include <string>
-#include <Classes.h>
 
 using namespace std;
 
-class Player: Entity{
+class Player{
 
     public:
 
@@ -16,8 +15,6 @@ class Player: Entity{
             name = targ_name;
             health = targ_health;
             health_max = targ_health_max;
-            character = 'P';
-            priority = 0;
         }
 
         void change_health(int amount){

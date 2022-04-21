@@ -16,22 +16,21 @@ class DisplayTool{
         DisplayTool(Renderer *targ_renderer){
 
             renderer = targ_renderer;
-
         }
 
-        void display_variant(variant<Variable, SimpleList, List, Choice, Selection> *variant_obj, bool hovered, bool selected){
+        void display_variant(variant<Variable, SimpleList, List, Choice, Selection> &variant_obj, bool hovered, bool selected){
 
             renderer->add_content(" ", false);
 
             //Get the index of the variant to know what object we are dealing with
-            switch(variant_obj->index()){
+            switch(variant_obj.index()){
 
                 //Variable
                 case 0:
                     {
                         bool is_escape_key {false};
 
-                        if(get<Variable>(*variant_obj).is_escape){
+                        if(get<Variable>(variant_obj).is_escape){
                                 is_escape_key = true;
                             }
 
@@ -39,10 +38,10 @@ class DisplayTool{
                         if(selected){
 
                             renderer->add_content("<", false);
-                            renderer->add_content(get<Variable>(*variant_obj).display, false, renderer->selection_color);
+                            renderer->add_content(get<Variable>(variant_obj).display, false, renderer->selection_color);
                             renderer->add_content(">: ", false);
                             renderer->add_content("[", false, renderer->selection_color);
-                            renderer->add_content(get<Variable>(*variant_obj).content, false, renderer->selection_color);
+                            renderer->add_content(get<Variable>(variant_obj).content, false, renderer->selection_color);
                             renderer->add_content("]", true, renderer->selection_color);
                             return;
                         }
@@ -53,27 +52,27 @@ class DisplayTool{
                             if(is_escape_key){
                                 
                                 renderer->add_content("<", false);
-                                renderer->add_content(get<Variable>(*variant_obj).display, false, renderer->selection_color);
+                                renderer->add_content(get<Variable>(variant_obj).display, false, renderer->selection_color);
                                 renderer->add_content(">");
                                 return;
                             }
 
                             renderer->add_content("<", false);
-                            renderer->add_content(get<Variable>(*variant_obj).display, false, renderer->selection_color);
+                            renderer->add_content(get<Variable>(variant_obj).display, false, renderer->selection_color);
                             renderer->add_content(">: ", false);
-                            renderer->add_content(get<Variable>(*variant_obj).content, true);
+                            renderer->add_content(get<Variable>(variant_obj).content, true);
                             return;
                         }
 
                         if(is_escape_key){
                                 
-                            renderer->add_content(get<Variable>(*variant_obj).display);
+                            renderer->add_content(get<Variable>(variant_obj).display);
                             return;
                         }
 
-                        renderer->add_content(get<Variable>(*variant_obj).display, false);
+                        renderer->add_content(get<Variable>(variant_obj).display, false);
                         renderer->add_content(": ", false);
-                        renderer->add_content(get<Variable>(*variant_obj).content);
+                        renderer->add_content(get<Variable>(variant_obj).content);
                         return;
                     }
 
@@ -83,23 +82,23 @@ class DisplayTool{
                     //Item is selected
                     if(selected){
 
-                        renderer->add_content(get<SimpleList>(*variant_obj).display, false);
+                        renderer->add_content(get<SimpleList>(variant_obj).display, false);
                         renderer->add_content(":");
                         
                         //Simple List index of where our cursor or selected index element exists, saves us the time of running an if statement for each index
-                        int cursor_or_selected_index {get<SimpleList>(*variant_obj).inside_cursor_index};
+                        int cursor_or_selected_index {get<SimpleList>(variant_obj).inside_cursor_index};
                         
                         //Loop through the elements before the cursor or selected index 
                         for(int i = 0; i < cursor_or_selected_index; i++){
                             
                             renderer->add_content("   ", false);
-                            renderer->add_content(get<SimpleList>(*variant_obj).content.at(i));
+                            renderer->add_content(get<SimpleList>(variant_obj).content.at(i));
                         }
 
                         //The element at the cursor's position is selected
-                        if(get<SimpleList>(*variant_obj).inside_selected_index >= 0){
+                        if(get<SimpleList>(variant_obj).inside_selected_index >= 0){
                             renderer->add_content("    [", false, renderer->selection_color);
-                            renderer->add_content(get<SimpleList>(*variant_obj).content.at(get<SimpleList>(*variant_obj).inside_selected_index),
+                            renderer->add_content(get<SimpleList>(variant_obj).content.at(get<SimpleList>(variant_obj).inside_selected_index),
                                                   false, renderer->selection_color);
                             renderer->add_content("]", true, renderer->selection_color);
                         }
@@ -108,16 +107,16 @@ class DisplayTool{
 
                             //The element is not selected and is just being hovered over
                             renderer->add_content("   <", false);
-                                renderer->add_content(get<SimpleList>(*variant_obj).content.at(get<SimpleList>(*variant_obj).inside_cursor_index),
+                                renderer->add_content(get<SimpleList>(variant_obj).content.at(get<SimpleList>(variant_obj).inside_cursor_index),
                                                     false, renderer->selection_color);
                                 renderer->add_content(">", true);
 
                         }
 
                         //Loop through the rest of the elements 
-                        for(int i = cursor_or_selected_index + 1; i < get<SimpleList>(*variant_obj).content.size(); i++){
+                        for(int i = cursor_or_selected_index + 1; i < get<SimpleList>(variant_obj).content.size(); i++){
                             renderer->add_content("   ", false);
-                            renderer->add_content(get<SimpleList>(*variant_obj).content.at(i));
+                            renderer->add_content(get<SimpleList>(variant_obj).content.at(i));
                         }
 
                         return;
@@ -126,25 +125,25 @@ class DisplayTool{
                     //Item is hovered by the cursor
                     else if(hovered){
                         renderer->add_content("<", false);
-                        renderer->add_content(get<SimpleList>(*variant_obj).display, false, renderer->selection_color);
+                        renderer->add_content(get<SimpleList>(variant_obj).display, false, renderer->selection_color);
                         renderer->add_content(">:");
 
                         //Loop through each of the elements
-                        for(int i = 0; i < get<SimpleList>(*variant_obj).content.size(); i++){
+                        for(int i = 0; i < get<SimpleList>(variant_obj).content.size(); i++){
                             renderer->add_content("    ", false);
-                            renderer->add_content(get<SimpleList>(*variant_obj).content.at(i));
+                            renderer->add_content(get<SimpleList>(variant_obj).content.at(i));
                         }
 
                         return;
                     }
 
-                    renderer->add_content(get<SimpleList>(*variant_obj).display, false);
+                    renderer->add_content(get<SimpleList>(variant_obj).display, false);
                     renderer->add_content(":");
 
                     //Loop through each of the elements
-                    for(int i = 0; i < get<SimpleList>(*variant_obj).content.size(); i++){
+                    for(int i = 0; i < get<SimpleList>(variant_obj).content.size(); i++){
                         renderer->add_content("   ", false);
-                        renderer->add_content(get<SimpleList>(*variant_obj).content.at(i));
+                        renderer->add_content(get<SimpleList>(variant_obj).content.at(i));
                     }
                     return;
 
@@ -154,30 +153,30 @@ class DisplayTool{
                     //Item is selected
                     if(selected){
 
-                        renderer->add_content(get<List>(*variant_obj).display, false);
+                        renderer->add_content(get<List>(variant_obj).display, false);
                         renderer->add_content(":");
                         
                         //Simple List index of where our cursor or selected index element exists, saves us the time of running an if statement for each index
-                        int cursor_or_selected_index {get<List>(*variant_obj).inside_cursor_index};
+                        int cursor_or_selected_index {get<List>(variant_obj).inside_cursor_index};
                         
                         //Loop through the elements before the cursor or selected index 
                         for(int i = 0; i < cursor_or_selected_index; i++){
                             
                             renderer->add_content("   ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(0), false);
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(0), false);
                             renderer->add_content(": ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(1));
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(1));
                         }
  
                         //The element at the cursor's position is selected
-                        if(get<List>(*variant_obj).inside_selected_index >= 0){
+                        if(get<List>(variant_obj).inside_selected_index >= 0){
 
                             renderer->add_content("   <", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(get<List>(*variant_obj).inside_selected_index).at(0),
+                            renderer->add_content(get<List>(variant_obj).content.at(get<List>(variant_obj).inside_selected_index).at(0),
                                                   false, renderer->selection_color);
                             renderer->add_content(">: ", false);
                             renderer->add_content("[", false, renderer->selection_color);
-                            renderer->add_content(get<List>(*variant_obj).content.at(get<List>(*variant_obj).inside_selected_index).at(1),
+                            renderer->add_content(get<List>(variant_obj).content.at(get<List>(variant_obj).inside_selected_index).at(1),
                                                   false, renderer->selection_color);
                             renderer->add_content("]", true, renderer->selection_color);
                         }
@@ -186,20 +185,20 @@ class DisplayTool{
 
                             //The element is not selected and is just being hovered over
                             renderer->add_content("   <", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(get<List>(*variant_obj).inside_cursor_index).at(0),
+                            renderer->add_content(get<List>(variant_obj).content.at(get<List>(variant_obj).inside_cursor_index).at(0),
                                                   false, renderer->selection_color);
                             renderer->add_content(">: ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(get<List>(*variant_obj).inside_cursor_index).at(1),
+                            renderer->add_content(get<List>(variant_obj).content.at(get<List>(variant_obj).inside_cursor_index).at(1),
                                                   true);
 
                         }
 
                         //Loop through the rest of the elements 
-                        for(int i = cursor_or_selected_index + 1; i < get<List>(*variant_obj).content.size(); i++){
+                        for(int i = cursor_or_selected_index + 1; i < get<List>(variant_obj).content.size(); i++){
                             renderer->add_content("   ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(0), false);
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(0), false);
                             renderer->add_content(": ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(1));
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(1));
                         }
 
                         return;
@@ -209,29 +208,29 @@ class DisplayTool{
                     else if(hovered){
                         
                         renderer->add_content("<", false);
-                        renderer->add_content(get<List>(*variant_obj).display, false, renderer->selection_color);
+                        renderer->add_content(get<List>(variant_obj).display, false, renderer->selection_color);
                         renderer->add_content(">:");
 
                         //Loop through each of the elements
-                        for(int i = 0; i < get<List>(*variant_obj).content.size(); i++){
+                        for(int i = 0; i < get<List>(variant_obj).content.size(); i++){
                             renderer->add_content("    ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(0), false);
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(0), false);
                             renderer->add_content(": ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(1));
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(1));
                         }
 
                         return;
                     }
 
-                    renderer->add_content(get<List>(*variant_obj).display, false);
+                    renderer->add_content(get<List>(variant_obj).display, false);
                     renderer->add_content(":");
 
                     //Loop through each of the elements
-                    for(int i = 0; i < get<List>(*variant_obj).content.size(); i++){
+                    for(int i = 0; i < get<List>(variant_obj).content.size(); i++){
                         renderer->add_content("   ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(0), false);
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(0), false);
                             renderer->add_content(": ", false);
-                            renderer->add_content(get<List>(*variant_obj).content.at(i).at(1));
+                            renderer->add_content(get<List>(variant_obj).content.at(i).at(1));
                     }
 
                     return;
@@ -242,26 +241,26 @@ class DisplayTool{
                     //Item is selected
                     if(selected){
 
-                        renderer->add_content(get<Choice>(*variant_obj).display, false);
+                        renderer->add_content(get<Choice>(variant_obj).display, false);
                         renderer->add_content(":");
                         
                         //Loop through the elements before the cursor
-                        for(int i = 0; i < get<Choice>(*variant_obj).inside_cursor_index; i++){
+                        for(int i = 0; i < get<Choice>(variant_obj).inside_cursor_index; i++){
                             
                             renderer->add_content("   ", false);
-                            renderer->add_content(get<Choice>(*variant_obj).content.at(i));
+                            renderer->add_content(get<Choice>(variant_obj).content.at(i));
                         }
 
                         //Display the element highlighted by the cursor
                         renderer->add_content("   <", false);
-                            renderer->add_content(get<Choice>(*variant_obj).content.at(get<Choice>(*variant_obj).inside_cursor_index),
+                            renderer->add_content(get<Choice>(variant_obj).content.at(get<Choice>(variant_obj).inside_cursor_index),
                                                 false, renderer->selection_color);
                             renderer->add_content(">", true);
 
                         //Loop through the rest of the elements 
-                        for(int i = get<Choice>(*variant_obj).inside_cursor_index + 1; i < get<Choice>(*variant_obj).content.size(); i++){
+                        for(int i = get<Choice>(variant_obj).inside_cursor_index + 1; i < get<Choice>(variant_obj).content.size(); i++){
                             renderer->add_content("   ", false);
-                            renderer->add_content(get<Choice>(*variant_obj).content.at(i));
+                            renderer->add_content(get<Choice>(variant_obj).content.at(i));
                         }
 
                         return;
@@ -270,15 +269,15 @@ class DisplayTool{
                     //Item is hovered by the cursor
                     else if(hovered){
                         renderer->add_content("<", false);
-                        renderer->add_content(get<Choice>(*variant_obj).display, false, renderer->selection_color);
+                        renderer->add_content(get<Choice>(variant_obj).display, false, renderer->selection_color);
                         renderer->add_content(">: ", false);
-                        renderer->add_content(get<Choice>(*variant_obj).content.at(get<Choice>(*variant_obj).current_choice_index));
+                        renderer->add_content(get<Choice>(variant_obj).content.at(get<Choice>(variant_obj).current_choice_index));
                         return;
                     }
 
-                    renderer->add_content(get<Choice>(*variant_obj).display, false);
+                    renderer->add_content(get<Choice>(variant_obj).display, false);
                     renderer->add_content(": ", false);
-                    renderer->add_content(get<Choice>(*variant_obj).content.at(get<Choice>(*variant_obj).current_choice_index));
+                    renderer->add_content(get<Choice>(variant_obj).content.at(get<Choice>(variant_obj).current_choice_index));
                     return;
             }
 
@@ -411,7 +410,7 @@ class DisplayTool{
             renderer->add_content(to_string(value), true, current_color);
         }
 
-        pair<int, int> dynamic_selection(Selection *sel_obj, int index, string display = ""){
+        pair<int, int> dynamic_selection(Selection &sel_obj, int index, string display = ""){
 
             if (display.length() > 0){
                 renderer->add_content(display, false);
@@ -423,7 +422,7 @@ class DisplayTool{
             bool hovered {false};
 
             //Loop through every element in our choices
-            for(string element : sel_obj->content){
+            for(string element : sel_obj.content){
                 
                 hovered = false;
 
@@ -450,7 +449,7 @@ class DisplayTool{
                 }
 
                 //We have reached the top of the list, place cursor at the bottom 
-                return pair<int, int>(sel_obj->content.size() - 1, 0);
+                return pair<int, int>(sel_obj.content.size() - 1, 0);
 
                 
             }
@@ -459,7 +458,7 @@ class DisplayTool{
             else if(inp == 115){
 
                 //Move the cursor down an element if there is room
-                if(index + 1 < sel_obj->content.size()){
+                if(index + 1 < sel_obj.content.size()){
                     return pair<int, int>(index + 1, 0);
                 }
 
@@ -479,7 +478,7 @@ class DisplayTool{
             else if(inp == 101){
 
                 //Place cursor at the bottom
-                return pair<int, int>(sel_obj->content.size() - 1, 0);
+                return pair<int, int>(sel_obj.content.size() - 1, 0);
 
             }
 
@@ -495,7 +494,7 @@ class DisplayTool{
 
         }
 
-        pair<int, int> dynamic_input(vector<variant<Variable, SimpleList, List, Choice, Selection>> *input_data, 
+        pair<int, int> dynamic_input(vector<variant<Variable, SimpleList, List, Choice, Selection>> &input_data, 
                                      pair<int, int> last_index, vector<int> list_escape_index = {}, string display = ""){
             
             int selected_index {last_index.second};
@@ -510,12 +509,12 @@ class DisplayTool{
             int count {0};
 
             //Loop through each element in our input data
-            for(variant<Variable, SimpleList, List, Choice, Selection> element : *input_data){
+            for(variant<Variable, SimpleList, List, Choice, Selection> element : input_data){
                 
                 //This element is selected
                 if(count == selected_index){
 
-                    display_variant(&element, false, true);
+                    display_variant(element, false, true);
                     count += 1;
                     continue;
                 }
@@ -523,12 +522,12 @@ class DisplayTool{
                 //This element is hovered by the cursor
                 else if(count == cursor_index){
 
-                    display_variant(&element, true, false);
+                    display_variant(element, true, false);
                     count += 1;
                     continue;
                 }
 
-                display_variant(&element, false, false);
+                display_variant(element, false, false);
                 count += 1;
             }
 
@@ -558,7 +557,7 @@ class DisplayTool{
                     case 115:
 
                         //User has reached the bottom of the content, send cursor to the top
-                        if(cursor_index + 1 == input_data->size()){
+                        if(cursor_index + 1 == input_data.size()){
                             return pair<int, int>(0, selected_index);
                         }
 
@@ -569,7 +568,7 @@ class DisplayTool{
 
                         //User has reached the top of the content, send cursor to the bottom 
                         if(cursor_index - 1 < 0){
-                            return pair<int, int>(input_data->size() - 1, selected_index);
+                            return pair<int, int>(input_data.size() - 1, selected_index);
                         }
 
                         return pair<int, int>(cursor_index - 1, selected_index);
@@ -580,24 +579,24 @@ class DisplayTool{
             //User has something selected, input will be directed into whatever object they have selected
             else{
 
-                switch(input_data->at(selected_index).index()){
+                switch(input_data.at(selected_index).index()){
 
                     //Variable
                     case 0:
 
-                        return get<Variable>(input_data->at(selected_index)).handle_input(character, cursor_index, selected_index);
+                        return get<Variable>(input_data.at(selected_index)).handle_input(character, cursor_index, selected_index);
 
                     //SimpleList
                     case 1:
 
-                        return get<SimpleList>(input_data->at(selected_index)).handle_input(character, cursor_index, selected_index);
+                        return get<SimpleList>(input_data.at(selected_index)).handle_input(character, cursor_index, selected_index);
 
                     //List
                     case 2:
 
                         {
 
-                            pair<int, int> final = get<List>(input_data->at(selected_index)).handle_input(character, cursor_index, selected_index);
+                            pair<int, int> final = get<List>(input_data.at(selected_index)).handle_input(character, cursor_index, selected_index);
 
                             //An escape key was pressed
                             if(final.first == -1){
@@ -616,7 +615,7 @@ class DisplayTool{
                                     renderer->add_content("What is the type of the value for the new attribute?\n");
                                     renderer->render();
 
-                                    last_index = dynamic_selection(&selections, last_index.first);
+                                    last_index = dynamic_selection(selections, last_index.first);
 
                                     if (last_index.second == 1){
                                         
@@ -656,7 +655,7 @@ class DisplayTool{
                                     renderer->clear_content();
                                     renderer->add_content("Enter the data for the new attribute\n");
 
-                                    second_last_index = dynamic_input(&second_input_data, second_last_index, vector<int> {1});
+                                    second_last_index = dynamic_input(second_input_data, second_last_index, vector<int> {1});
 
                                     if(second_last_index.first == -1){
 
@@ -664,7 +663,7 @@ class DisplayTool{
                                         if(get<List>(second_input_data.at(0)).content.at(0).at(1).size() > 0){
 
                                             //Insert the new value right before the add new attribute escape key inside our list
-                                            get<List>(input_data->at(selected_index)).add_new_attrib(get<List>(second_input_data.at(0)).content.at(0).at(1),
+                                            get<List>(input_data.at(selected_index)).add_new_attrib(get<List>(second_input_data.at(0)).content.at(0).at(1),
                                                                                                 get<List>(second_input_data.at(0)).content.at(1).at(1),
                                                                                                 get<List>(second_input_data.at(0)).content.at(1).at(2));
                                         }
@@ -682,7 +681,7 @@ class DisplayTool{
                     //Choice
                     case 3:
 
-                        return get<Choice>(input_data->at(selected_index)).handle_input(character, cursor_index, selected_index);
+                        return get<Choice>(input_data.at(selected_index)).handle_input(character, cursor_index, selected_index);
 
                     //Selection
                     case 4:
