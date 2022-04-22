@@ -1,4 +1,13 @@
-#include "DisplayTool.h"
+#ifndef PLAYER
+#define PLAYER
+
+#include "Classes.cpp"
+#include "Tilemap.cpp"
+#include "Renderer.cpp"
+
+#include <string>
+
+using namespace std;
 
 void display_colors(Renderer &renderer){
 
@@ -159,42 +168,6 @@ void change_color_menu(Renderer &renderer, DisplayTool &display_tool){
     }
 }
 
-void color_menu(Renderer &renderer, DisplayTool &display_tool){
-    
-    Selection selections(vector<string>{"Add New Color", "Change Color", " <- Back"});
-    pair<int, int> last_index {0, 0};
-
-    while(true){
-        
-        renderer.clear_content();
-        renderer.add_content("Settings/Modify Colors\n\n");
-        display_colors(renderer);
-        renderer.add_new_line();
-        last_index = display_tool.dynamic_selection(selections, last_index.first);
-
-        if(last_index.second == 1){
-
-            string choice = selections.content.at(last_index.first);
-
-            if(choice == "Change Color"){
-
-                change_color_menu(renderer, display_tool);                
-            }
-
-            else if(choice == "Add New Color"){
-
-                add_color_menu(renderer, display_tool);
-            }
-
-            else if(choice == " <- Back"){
-                return;
-            }
-
-        }
-
-    }
-}
-
 void terminal_edit_menu(Renderer &renderer, DisplayTool &display_tool){
 
     pair<int, int> last_index {0, 0};
@@ -280,3 +253,186 @@ void terminal_edit_menu(Renderer &renderer, DisplayTool &display_tool){
     }
 
 }
+
+void color_menu(Renderer &renderer, DisplayTool &display_tool){
+    
+    Selection selections(vector<string>{"Add New Color", "Change Color", " <- Back"});
+    pair<int, int> last_index {0, 0};
+
+    while(true){
+        
+        renderer.clear_content();
+        renderer.add_content("Settings/Modify Colors\n\n");
+        display_colors(renderer);
+        renderer.add_new_line();
+        last_index = display_tool.dynamic_selection(selections, last_index.first);
+
+        if(last_index.second == 1){
+
+            string choice = selections.content.at(last_index.first);
+
+            if(choice == "Change Color"){
+
+                change_color_menu(renderer, display_tool);                
+            }
+
+            else if(choice == "Add New Color"){
+
+                add_color_menu(renderer, display_tool);
+            }
+
+            else if(choice == " <- Back"){
+                return;
+            }
+
+        }
+
+    }
+}
+
+void settings(Renderer &renderer, DisplayTool &display_tool){
+
+    pair<int, int> last_index {0, 0};
+    Selection selections(vector<string>{"Modify Terminal Colors", "Modify Colors", "Input Menu", "Close Menu"});
+
+    while(true){
+
+        clear();
+        renderer.clear_content();
+        renderer.add_content("Settings");
+        renderer.add_new_line();
+
+        last_index = display_tool.dynamic_selection(selections, last_index.first, "Select One of the Following");
+
+        if(last_index.second == 1){
+
+            string choice = selections.content.at(last_index.first);
+
+            if(choice == "Modify Colors"){
+                color_menu(renderer, display_tool);
+            }
+
+            else if(choice == "Modify Terminal Colors"){
+
+                terminal_edit_menu(renderer, display_tool);
+
+            }
+
+            else if(choice == "Input Menu"){
+
+                vector<vector<string>> list_elements {vector<string>{"Element 1", "", "str", "-1", "true"}, vector<string>{"Element 2", "", "int", "-1", "true"},
+                                                    vector<string>{"(Add New Attribute)", "", "str", "-1", "true"}};
+
+                vector<variant<Variable, SimpleList, List, Choice, Selection>> input_data{Variable("Name", "str", false),
+                                                                                        SimpleList("Simple List", 
+                                                                                                    vector<string>{"Note 1",
+                                                                                                                   "Note 2"}),
+                                                                                        List("Elements", list_elements, 2),
+                                                                                        Choice("Choices", vector<string>{"Choice 1", "Choice 2"}),
+                                                                                        Variable("(Complete Entry)", "", true),
+                                                                                    };
+                pair<int, int> last_index(0, -1);
+
+                while(true){
+
+                    clear();
+                    renderer.clear_content();
+                    last_index = display_tool.dynamic_input(input_data, last_index, vector<int> {4}, "Press Enter to Edit");
+
+                    //User selected the escape key
+                    if(last_index.first == -1){
+                        break;
+                    } 
+                }
+            }
+            
+            else if(choice == "Close Menu"){
+                return;
+            }
+        }
+    }
+}
+
+
+class Player: public Entity{
+
+    public:
+
+        Tilemap *tilemap;
+        DisplayTool *display_tool;
+
+
+        Player(string targ_name, int targ_hitpoints, int targ_max_hitpoints, Tilemap &tilemap_instance, DisplayTool &display_tool_instance){
+
+            tilemap = &tilemap_instance; // Tilemap instance
+            display_tool = &display_tool_instance; // DisplayTool instance
+
+            name = targ_name;
+            character = "P";
+            priority = 5;
+            hitpoints = targ_hitpoints;
+            max_hitpoints = targ_max_hitpoints;
+            color = "Blue";
+
+        }
+
+        void change_health(int amount){
+            
+            if(hitpoints + amount < 0){
+                hitpoints = 0;
+                return;
+            }
+
+            else if(hitpoints + amount > max_hitpoints){
+                hitpoints = max_hitpoints;
+                return;
+            }
+
+            hitpoints += amount;
+            return;
+
+        }
+
+        void handle_input(int character){
+
+            /*
+            Input from the user is sent here to be handled
+            :param character: Int from getch() that will be handled
+            */
+
+            // w - Move Up
+            if(character == 119){
+                
+                tilemap->move(*this, xPos, yPos - 1);
+            }
+
+            // d - Move Right
+            else if(character == 100){
+
+                tilemap->move(*this, xPos + 1, yPos);
+            }
+
+            // s - Move Down
+            else if(character == 115){
+
+                tilemap->move(*this, xPos, yPos + 1);
+            }
+
+            //a - Move Left
+            else if(character == 97){
+
+                tilemap->move(*this, xPos - 1, yPos);
+            }
+
+            //m - Menu
+            else if(character == 109){
+
+                settings(*display_tool->renderer, *display_tool);
+
+            }
+
+        }
+
+};
+
+#endif

@@ -1,23 +1,26 @@
-#include <curses.h>
-#include <iostream>
-#include <string>
-#include <map>
-#include <vector>
+#ifndef RENDERER
+#define RENDERER
 
-using namespace std;
+    #include <curses.h>
+    #include <string>
+    #include <map>
+    #include <vector>
 
-int convert_to_thousand(int num){
+    using namespace std;
+
+    int convert_to_thousand(int num){
 
     return int((num / 255.0) * 1000);
-    
-}
 
-pair<pair<map<string, int>, map<string, vector<int>>>, int> create_colors(int count = 1){
+    }
+
+    pair<pair<map<string, int>, map<string, vector<int>>>, int> create_colors(int count = 1){
 
     // Map of color names tied to their rgb values
     map<string, vector<int>> color_rgb_vals = {  
                                             {"White", vector<int>{255, 255, 255}},
                                             {"Blue", vector<int>{0, 120, 255}},
+                                            {"Kashmir Blue", vector<int>{78, 94, 160}},
                                             {"Light Blue", vector<int>{74, 231, 255}},
                                             {"Red", vector<int>{255, 75, 50}},
                                             {"Green", vector<int>{70, 255, 81}},
@@ -54,10 +57,10 @@ pair<pair<map<string, int>, map<string, vector<int>>>, int> create_colors(int co
     return pair<pair<map<string, int>, map<string, vector<int>>>, int>
         (pair<map<string, int>, map<string, vector<int>>>{color_pair_vals, color_rgb_vals}, count);
 
-}
+    }
 
 
-class Renderer{
+    class Renderer{
 
     public:
 
@@ -65,7 +68,7 @@ class Renderer{
         map<string, vector<int>> color_rgb_map; // This gives us our list of color names to their respective rgb values
         int current_color_pair {1}; // Number of the color pair we are currently on
         vector<pair<string, int>> content; // Content that will be rendered on next render call, stored in a pair resembling the text to be rendered, and the color pair it 
-                                             // corresponds to
+                                                // corresponds to
 
         string terminal_text_color = "White"; // The color that is displayed for default terminal text
         string selection_color {"Blue"}; // The color that is displayed when the cursor hovers over an element
@@ -180,7 +183,7 @@ class Renderer{
             if(new_line){
                 content.push_back(pair<string, int>("\n", 0));
             }
- 
+
         }
 
         void add_new_line(int num = 1){
@@ -210,4 +213,6 @@ class Renderer{
             refresh();
 
         }
-};
+    };
+
+#endif

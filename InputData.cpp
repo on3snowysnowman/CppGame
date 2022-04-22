@@ -1,3 +1,6 @@
+#ifndef INPUT_DATA
+#define INPUT_DATA
+
 #include <vector>
 #include <string>
 
@@ -481,3 +484,5 @@ class Selection{
         }
 
 };
+
+#endif

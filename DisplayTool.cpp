@@ -1,5 +1,6 @@
-#include "Renderer.h"
-#include "InputData.h"
+#include "Renderer.cpp"
+#include "InputData.cpp"
+
 #include <iostream>
 #include <variant>
 #include <cmath>

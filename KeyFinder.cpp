@@ -1,5 +1,5 @@
 
-#include <curses.h>
+#include <curses.cpp>
 #include <string>
 
 using namespace std;
