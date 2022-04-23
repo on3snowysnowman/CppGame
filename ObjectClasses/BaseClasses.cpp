@@ -2,6 +2,7 @@
 #define BASECLASSES
 
 #include <string>
+#include <iostream>
 
 using namespace std;
 
@@ -11,10 +12,12 @@ class BaseCharacter{
 
         string character; //Character that will be rendered
         string color; // Color of this Character
-        string name; //Name of this Character
+        string name; // Name of this Character
+        string type_obj {"BaseCharacter"}; // What class this object is derived from, ei: "BaseCharacter" or "Entity"
         int priority; //The priority of where this will be placed in comparison to other BaseCharacteres in a vector, 
                     //the higher the number, the higher the priority.
         bool traversable {true}; // Determines whether other BaseCharacter objects can be placed on the same 'tile' as this object
+        bool should_move {false}; // If this object should be called to move inside of our input loop 
 
         int xPos = 0; // X position in the tilemap
         int yPos = 0; // Y position in the tllemap
@@ -50,6 +53,8 @@ class BaseCharacter{
             xPos = x;
             yPos = y;
         }
+
+        void random_move(){}
 };
 
 
@@ -65,8 +70,13 @@ class Entity: public BaseCharacter{
         int max_hitpoints; //Maximum hitpoints of this entity
         int damage {0}; // How much damage this entity deals
         bool movement_random {true}; // Determines whether this entity's movement is random, or it is tracking something
+        
 
-        Entity(){}
+        Entity(){
+
+            type_obj = "Entity";
+            should_move = true;
+        }
 
         int get_hitpoints(){
             return hitpoints;
@@ -84,6 +94,11 @@ class Entity: public BaseCharacter{
             
             traversable = is_traversable;
         }
+
+        void random_move(){
+            cout << this->name << " should move\n";
+        }
+
 };
 
 

@@ -1,7 +1,8 @@
 #include "Player.cpp"
 #include "DisplayTool.cpp"
-#include "Camera.cpp"
+#include "Camera.cpp" 
 
+#include <iostream>
 
 class GameHandler{
 
@@ -51,8 +52,7 @@ class GameHandler{
                     if(choice == "Start Game"){
                         
                         camera->tilemap->add(*player, 1, 1);
-                        Enemy* goblin = new Enemy("Goblin", "G", 4, 10, 10, "Green");
-                        cout << &goblin << "\n";
+                        Enemy* goblin = new Enemy("Goblin", "G", 4, 10, 10, "Green");       
                         camera->tilemap->add(*goblin, 4, 4);
                         run = true;
                         input_loop();
@@ -77,7 +77,12 @@ class GameHandler{
                 camera->flush();
                 renderer->render();
                 character = getch();
+
                 player->handle_input(character);
+                camera->tilemap->move_all_entities();
+                endwin();
+                exit(0);
+
             }            
         }
 

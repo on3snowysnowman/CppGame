@@ -4,6 +4,8 @@
 #include "ObjectClasses/BaseClasses.cpp"
 #include <vector>
 #include <algorithm>
+#include <iostream>
+#include <curses.h>
 
 
 bool compare(BaseCharacter* obj_one, BaseCharacter* obj_two){
@@ -15,6 +17,8 @@ class Tilemap{
     public:
 
         vector<vector<vector<BaseCharacter*>>> tilemap_data; // 3D Tilemap holding our data
+        vector<BaseCharacter*> entities_in_tilemap; // Vector containing all known entities inside of our tilemap. This saves us time so we don't have 
+                                            // to search for them every time the input loop resets 
 
         int width, height;
 
@@ -53,22 +57,38 @@ class Tilemap{
             param: y = Y coordinate to place BaseCharacter Object
             */  
 
+            // If this object is of Entity type, add it to our vector of known entities
+            if(object_to_add.type_obj == "Entity"){
+                //cout << object_to_add.name << " is an Entity. Add it\n";
+                entities_in_tilemap.push_back(&object_to_add);
+            }
+
             tilemap_data.at(y).at(x).push_back(&object_to_add);
             object_to_add.set_position(x, y);
 
             sort(tilemap_data.at(y).at(x).begin(), tilemap_data.at(y).at(x).end(), compare);
         }
 
-        void delete_obj(BaseCharacter &object_to_delete, int x, int y){
+        void delete_obj(BaseCharacter &object_to_delete, bool deconstruct = false){
 
             int z {0};
 
-            for(BaseCharacter* element : tilemap_data.at(y).at(x)){
+            for(BaseCharacter* element : tilemap_data.at(object_to_delete.yPos).at(object_to_delete.xPos)){
 
                 if(element == &object_to_delete){
                     
-                    tilemap_data.at(y).at(x).erase(tilemap_data.at(y).at(x).begin() + z);
-                    delete &object_to_delete;
+                    if(object_to_delete.type_obj == "Entity"){
+                        entities_in_tilemap.erase(
+                            remove(entities_in_tilemap.begin(), entities_in_tilemap.end(), &object_to_delete), entities_in_tilemap.end());;
+                    }
+
+                    tilemap_data.at(object_to_delete.yPos).at(object_to_delete.xPos).
+                        erase(tilemap_data.at(object_to_delete.yPos).at(object_to_delete.xPos).begin() + z);
+                    
+                    if(deconstruct){
+                        delete &object_to_delete;
+                    }
+                    
                     return;
                 }
 
@@ -96,8 +116,7 @@ class Tilemap{
             
                 if (bound_check(x, y)){
 
-                    tilemap_data.at(objectLocation[1]).at(objectLocation[0])
-                    .erase(tilemap_data.at(objectLocation[1]).at(objectLocation[0]).begin() + objectLocation[2]);
+                    delete_obj(object_to_move);
 
                     add(object_to_move, x, y);
                     object_to_move.set_position(x, y);
@@ -106,6 +125,20 @@ class Tilemap{
 
             }
 
+        }
+
+        void move_all_entities(){
+
+            for(BaseCharacter* element : entities_in_tilemap){
+
+                if(element->should_move){
+
+                    element->random_move();
+                }
+            }
+
+            endwin();
+            exit(0);
         }
 
         bool bound_check(int x, int y){

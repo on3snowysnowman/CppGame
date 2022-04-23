@@ -376,6 +376,7 @@ class Player: public Entity{
             hitpoints = targ_hitpoints;
             max_hitpoints = targ_max_hitpoints;
             color = "Blue";
+            should_move = false;
 
         }
 
@@ -400,7 +401,7 @@ class Player: public Entity{
 
             /*
             Input from the user is sent here to be handled
-            :param character: Int from getch() that will be handled
+            :param character: Int from a getch() call that will be handled
             */
 
             // w - Move Up
