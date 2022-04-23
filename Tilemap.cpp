@@ -1,7 +1,7 @@
 #ifndef TILEMAP
 #define TILEMAP
 
-#include "Classes.cpp"
+#include "ObjectClasses/BaseClasses.cpp"
 #include <vector>
 #include <algorithm>
 
@@ -57,6 +57,24 @@ class Tilemap{
             object_to_add.set_position(x, y);
 
             sort(tilemap_data.at(y).at(x).begin(), tilemap_data.at(y).at(x).end(), compare);
+        }
+
+        void delete_obj(BaseCharacter &object_to_delete, int x, int y){
+
+            int z {0};
+
+            for(BaseCharacter* element : tilemap_data.at(y).at(x)){
+
+                if(element == &object_to_delete){
+                    
+                    tilemap_data.at(y).at(x).erase(tilemap_data.at(y).at(x).begin() + z);
+                    delete &object_to_delete;
+                    return;
+                }
+
+                z += 1;
+            }
+
         }
 
         void move(Entity &object_to_move, int x, int y){
@@ -216,6 +234,27 @@ class Tilemap{
 
             
             return coordinateArray;
+        }
+
+        BaseCharacter* find_obj_by_name(string name){
+            
+            for(int i = 0; i < tilemap_data.size(); i++){
+
+                    for(int j = 0; j < tilemap_data.at(i).size(); j++){
+
+                        for(int k = 0; k < tilemap_data.at(i).at(j).size(); k++){
+
+                            BaseCharacter* targ_obj = getObj(j, i, k);
+
+                            if(targ_obj->name == name){
+
+                                return targ_obj;
+                            }
+                        }
+                    }
+                }
+
+            return NULL;
         }
 
         BaseCharacter* getObj(int x, int y, int z){

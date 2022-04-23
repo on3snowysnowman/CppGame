@@ -1,3 +1,6 @@
+#ifndef DISPLAYTOOL
+#define DISPLAYTOOL
+
 #include "Renderer.cpp"
 #include "InputData.cpp"
 
@@ -698,3 +701,5 @@ class DisplayTool{
         }
 
 };
+
+#endif

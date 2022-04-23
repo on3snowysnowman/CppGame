@@ -1,9 +1,12 @@
 #ifndef PLAYER
 #define PLAYER
 
-#include "Classes.cpp"
+#include "ObjectClasses/TileClasses.cpp"
+#include "ObjectClasses/EntityClasses.cpp"
+#include "ObjectClasses/ItemClasses.cpp"
 #include "Tilemap.cpp"
 #include "Renderer.cpp"
+#include "DisplayTool.cpp"
 
 #include <string>
 

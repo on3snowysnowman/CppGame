@@ -1,5 +1,5 @@
-#ifndef CLASSES
-#define CLASSES
+#ifndef BASECLASSES
+#define BASECLASSES
 
 #include <string>
 
@@ -64,21 +64,9 @@ class Entity: public BaseCharacter{
         int hitpoints; // Hitpoints of this entity
         int max_hitpoints; //Maximum hitpoints of this entity
         int damage {0}; // How much damage this entity deals
-        
+        bool movement_random {true}; // Determines whether this entity's movement is random, or it is tracking something
+
         Entity(){}
-
-        Entity(string targ_name, string targ_character = "0", int targ_priority = 0, int targ_hitpoints = 0,
-            int targ_max_hitpoints = 0, string targ_color = "White", bool is_traversable = false){
-
-            name = targ_name;
-            character = targ_character;
-            priority = targ_priority;
-            hitpoints = targ_hitpoints;
-            max_hitpoints = targ_max_hitpoints;
-            color = targ_color;
-            traversable = is_traversable;
-
-        }
 
         int get_hitpoints(){
             return hitpoints;
@@ -98,34 +86,5 @@ class Entity: public BaseCharacter{
         }
 };
 
-
-class FloorTile: public BaseCharacter{
-
-    public:
-
-        FloorTile(){
-
-            character = ".";
-            name = "Floor";
-            color = "Kashmir Blue";
-            priority = 0;
-        }
-
-};
-
-
-class Weapon: public BaseCharacter{
-
-    public:
-
-        Weapon(){
-
-            character  = "W";
-            name = "Weapon";
-            color = "Orange";
-            priority = 1;
-        }
-
-};
 
 #endif
