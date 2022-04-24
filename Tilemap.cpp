@@ -132,13 +132,39 @@ class Tilemap{
             for(BaseCharacter* element : entities_in_tilemap){
 
                 if(element->should_move){
+                    
+                    vector<pair<int, int>> move_options;
 
-                    element->random_move();
+                    Entity *new_obj = (Entity *) *&element;
+                    new_obj->random_move();
+
+                    for(int y = new_obj->yPos - 1; y < y + 3; y++){
+
+                        for(int x = new_obj->xPos - 1; x < x + 3; x++){
+
+                            // Trying to access this object's tile
+                            if(y != 1 || x != 1){
+
+                                if(bound_check(x, y)){
+
+                                    move_options.push_back(pair<int, int>(x, y));
+                                }
+
+                            }
+                        }
+                    }
+
+                    for(pair<int, int> element: move_options){
+
+                        cout << element.first << ", " << element.second << "\n";
+                    }
+                    
+                    endwin();
+                    exit(0);
+
                 }
             }
 
-            endwin();
-            exit(0);
         }
 
         bool bound_check(int x, int y){

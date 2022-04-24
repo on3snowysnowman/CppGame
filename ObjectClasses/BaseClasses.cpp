@@ -53,8 +53,6 @@ class BaseCharacter{
             xPos = x;
             yPos = y;
         }
-
-        void random_move(){}
 };
 
 
@@ -96,7 +94,8 @@ class Entity: public BaseCharacter{
         }
 
         void random_move(){
-            cout << this->name << " should move\n";
+            
+            
         }
 
 };
