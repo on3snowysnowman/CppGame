@@ -1,2 +1,0 @@
-String{MyName:Joel}
-Int{Age:18}

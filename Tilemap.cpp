@@ -2,10 +2,13 @@
 #define TILEMAP
 
 #include "ObjectClasses/BaseClasses.cpp"
+#include "Random.cpp"
+
 #include <vector>
 #include <algorithm>
 #include <iostream>
 #include <curses.h>
+#include <fstream>
 
 
 bool compare(BaseCharacter* obj_one, BaseCharacter* obj_two){
@@ -21,6 +24,14 @@ class Tilemap{
                                             // to search for them every time the input loop resets 
 
         int width, height;
+        
+        Tilemap(int targ_width, int targ_height){
+            
+            width = targ_width;
+            height = targ_height;
+
+            create_tilemap();
+        }
 
         Tilemap(int targ_width, int targ_height, BaseCharacter &fill){
 
@@ -28,7 +39,6 @@ class Tilemap{
             height = targ_height; // Height of the tilemap
 
             create_tilemap(fill);
-
         }
 
         void create_tilemap(BaseCharacter &fill){
@@ -47,7 +57,22 @@ class Tilemap{
 
         }
 
-        void add(BaseCharacter &object_to_add, int x, int y){
+        void create_tilemap(){
+
+            for(int i = 0; i < height; i++){
+                
+                tilemap_data.push_back(vector<vector<BaseCharacter *>>{});
+
+                for(int j = 0; j < width; j++){
+
+                    tilemap_data.at(i).push_back(vector<BaseCharacter *>{});
+
+                }
+            }
+
+        }
+
+        void add(BaseCharacter& object_to_add, int x, int y){
             
             /*
             Adds a BaseCharacter object to the tilemap and sort the array where it is inserted
@@ -59,21 +84,33 @@ class Tilemap{
 
             // If this object is of Entity type, add it to our vector of known entities
             if(object_to_add.type_obj == "Entity"){
+
                 //cout << object_to_add.name << " is an Entity. Add it\n";
                 entities_in_tilemap.push_back(&object_to_add);
             }
 
+
             tilemap_data.at(y).at(x).push_back(&object_to_add);
             object_to_add.set_position(x, y);
+
+            
 
             sort(tilemap_data.at(y).at(x).begin(), tilemap_data.at(y).at(x).end(), compare);
         }
 
-        void delete_obj(BaseCharacter &object_to_delete, bool deconstruct = false){
+        void delete_obj(BaseCharacter &object_to_delete, int xPos = -1, int yPos = -1, bool deconstruct = false){
 
             int z {0};
 
-            for(BaseCharacter* element : tilemap_data.at(object_to_delete.yPos).at(object_to_delete.xPos)){
+            if(xPos == -1){
+                xPos = object_to_delete.xPos;
+            }
+
+            if(yPos == -1){
+                yPos = object_to_delete.yPos;
+            }
+
+            for(BaseCharacter* element : tilemap_data.at(yPos).at(xPos)){
 
                 if(element == &object_to_delete){
                     
@@ -82,8 +119,8 @@ class Tilemap{
                             remove(entities_in_tilemap.begin(), entities_in_tilemap.end(), &object_to_delete), entities_in_tilemap.end());;
                     }
 
-                    tilemap_data.at(object_to_delete.yPos).at(object_to_delete.xPos).
-                        erase(tilemap_data.at(object_to_delete.yPos).at(object_to_delete.xPos).begin() + z);
+                    tilemap_data.at(yPos).at(xPos).
+                        erase(tilemap_data.at(yPos).at(xPos).begin() + z);
                     
                     if(deconstruct){
                         delete &object_to_delete;
@@ -97,7 +134,7 @@ class Tilemap{
 
         }
 
-        void move(Entity &object_to_move, int x, int y){
+        void move(BaseCharacter &object_to_move, int x, int y){
             
             /*
             Moves an Entity to a different location in the tilemap
@@ -113,8 +150,8 @@ class Tilemap{
 
             // If the object was found
             if(objectLocation[3] == 1){
-            
-                if (bound_check(x, y)){
+
+                if(bound_check(x, y, object_to_move.ignore_non_traversables)){
 
                     delete_obj(object_to_move);
 
@@ -122,7 +159,6 @@ class Tilemap{
                     object_to_move.set_position(x, y);
 
                 }
-
             }
 
         }
@@ -136,38 +172,41 @@ class Tilemap{
                     vector<pair<int, int>> move_options;
 
                     Entity *new_obj = (Entity *) *&element;
-                    new_obj->random_move();
 
-                    for(int y = new_obj->yPos - 1; y < y + 3; y++){
+                    // Get a random number
+                    int random_num = get_random_num(1, 10);
 
-                        for(int x = new_obj->xPos - 1; x < x + 3; x++){
+                    // If the random number is less than or equal to the chance to move given by the entity, then we shall move the entity
+                    if(random_num <= new_obj->move_chance){
 
-                            // Trying to access this object's tile
-                            if(y != 1 || x != 1){
+                        int y_max = new_obj->yPos + 1;
+                        int x_max = new_obj->xPos + 1;
 
-                                if(bound_check(x, y)){
+                        for(int y = new_obj->yPos - 1; y <= y_max; y++){
 
-                                    move_options.push_back(pair<int, int>(x, y));
+                            for(int x = new_obj->xPos - 1; x <= x_max; x++){
+
+                                // Trying to access this object's tile
+                                if(y != 1 || x != 1){
+
+                                    if(bound_check(x, y)){
+
+                                        move_options.push_back(pair<int, int>(x, y));
+                                    }
                                 }
-
                             }
                         }
-                    }
 
-                    for(pair<int, int> element: move_options){
+                        pair<int, int> targ_move = move_options.at(get_random_num(0, move_options.size() - 1));
+                        move(*element, targ_move.first, targ_move.second);
 
-                        cout << element.first << ", " << element.second << "\n";
                     }
-                    
-                    endwin();
-                    exit(0);
 
                 }
             }
-
         }
 
-        bool bound_check(int x, int y){
+        bool bound_check(int x, int y, bool ignore_non_traversables = false){
 
             /*
             Checks whether the passed coordinates are within the tilemaps boundaries
@@ -181,12 +220,16 @@ class Tilemap{
 
             if(y >= 0 && y < tilemap_data.size() && x >= 0 && x < tilemap_data.at(y).size()){
 
-                for(BaseCharacter* element : tilemap_data.at(y).at(x)){
+                if(not ignore_non_traversables){
 
-                    // If this object's traversable bool is false
-                    if(not element->traversable){
-                        return false;
+                    for(BaseCharacter* element : tilemap_data.at(y).at(x)){
+
+                        // If this object's traversable bool is false
+                        if(not element->traversable){
+                            return false;
+                        }
                     }
+
                 }
 
                 return true;

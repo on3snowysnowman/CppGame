@@ -4,7 +4,7 @@ int main()
 {
     
     Renderer renderer;
-    DisplayTool display_tool(&renderer);
+    DisplayTool display_tool(renderer);
     FloorTile floor_tile;
     Tilemap tilemap(15, 10, floor_tile);
     Camera camera(tilemap, renderer);

@@ -33,4 +33,9 @@ class Camera{
             }
         }
 
+        void load_tilemap(Tilemap& tilemap_instance){
+
+            tilemap = &tilemap_instance;
+        }
+
 };

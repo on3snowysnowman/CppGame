@@ -19,6 +19,7 @@ pair<pair<map<string, int>, map<string, vector<int>>>, int> create_colors(int co
 // Map of color names tied to their rgb values
 map<string, vector<int>> color_rgb_vals = {  
                                         {"White", vector<int>{255, 255, 255}},
+                                        {"Light Gray", vector<int>{200, 200, 200}},
                                         {"Blue", vector<int>{0, 120, 255}},
                                         {"Kashmir Blue", vector<int>{78, 94, 160}},
                                         {"Light Blue", vector<int>{74, 231, 255}},
@@ -30,8 +31,6 @@ map<string, vector<int>> color_rgb_vals = {
                                         {"Magenta", vector<int>{255, 0, 255}},
                                         {"Orange", vector<int>{255, 150, 70}},
                                     }; 
-
-
 
 map<string, int> color_pair_vals; // Map of color names tied to their color pair numbers
 

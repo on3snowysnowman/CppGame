@@ -91,6 +91,7 @@ class FileHandler{
                 for(vector<string> element : save_contents){
                     
                     myFile << element.at(0) + "{" + element.at(1) + ":" + element.at(2) + "}\n";
+                    myFile << "\n";
                 }
 
                 myFile.close();

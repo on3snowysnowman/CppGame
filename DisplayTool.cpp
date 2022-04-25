@@ -17,9 +17,9 @@ class DisplayTool{
 
         Renderer *renderer;
 
-        DisplayTool(Renderer *targ_renderer){
+        DisplayTool(Renderer& targ_renderer){
 
-            renderer = targ_renderer;
+            renderer = &targ_renderer;
         }
 
         void display_variant(variant<Variable, SimpleList, List, Choice, Selection> &variant_obj, bool hovered, bool selected){
