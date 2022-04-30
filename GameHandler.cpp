@@ -32,6 +32,8 @@ class GameHandler{
             main_menu();
         }
 
+        void load_new_tilemap(){}
+
         void main_menu(){
             
             Selection selections(vector<string>{"Start Game", "Exit"});

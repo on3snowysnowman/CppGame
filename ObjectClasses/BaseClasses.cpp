@@ -33,6 +33,18 @@ class BaseCharacter{
             color = targ_color;
         }
 
+        BaseCharacter(const BaseCharacter &old_obj){
+            
+            character = old_obj.character;
+            color = old_obj.color;
+            name = old_obj.name;
+            priority = old_obj.priority;
+            traversable = old_obj.traversable;
+            should_move = old_obj.should_move;
+            ignore_non_traversables = old_obj.ignore_non_traversables;
+
+        }
+
         string get_name(){
             return name;
         }

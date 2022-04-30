@@ -440,6 +440,9 @@ class Player: public Entity{
 
         }
 
+        void load_tilemap(Tilemap &tilemap_instance){
+            tilemap = &tilemap_instance;
+        }
 };
 
 #endif

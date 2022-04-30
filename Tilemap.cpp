@@ -5,11 +5,25 @@
 #include "Random.cpp"
 
 #include <vector>
+#include <map>
 #include <algorithm>
 #include <iostream>
 #include <curses.h>
 #include <fstream>
 
+
+string remove_character(string string_to_strip, char black_list){
+
+    string final_string {""};
+
+    for(char element : string_to_strip){
+        if(element != black_list){
+            final_string += element;
+        }
+    }
+
+    return final_string;
+}
 
 bool compare(BaseCharacter* obj_one, BaseCharacter* obj_two){
     return obj_one->priority > obj_two->priority;
@@ -51,10 +65,69 @@ class Tilemap{
 
                     tilemap_data.at(i).push_back(vector<BaseCharacter *>{});
                     tilemap_data.at(i).at(j).push_back(&fill);
-
                 }
             }
 
+        }
+
+        bool targ_is_in_vector(string name, string targ, int x, int y){
+
+            /*
+            Takes in a name, a string that represents how we will conduct our search and a pair of coordinates. A search is conducted on the vector inside our tilemap at the 
+            passed coordinates. If any object's attribute inside the searched tilemap matches the passed string, the function returns true. Else false.
+            */
+
+            if(targ == "name"){
+
+                for(int z = 0; z < tilemap_data.at(y).at(x).size(); z++){
+                    if(getObj(x, y, z)->name == name){
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            else if(targ == "type"){
+                
+                for(int z = 0; z < tilemap_data.at(y).at(x).size(); z++){
+                    if(getObj(x, y, z)->type_obj == name){
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return false;
+        }
+
+        void fill(BaseCharacter &fill, bool no_duplicates = true){
+            
+            if(no_duplicates){
+                
+                for(int y = 0; y < height; y++){
+
+                    for(int x = 0; x < width; x++){
+                        
+                        if(not targ_is_in_vector(fill.name, "name", x, y)){
+                            
+                            add(fill, x, y);
+                            continue;
+                        }
+                    }
+                }
+
+                return;
+            }
+
+            for(int y = 0; y < height; y++){
+
+                for(int x = 0; x < width; x++){
+                    
+                    add(fill, x, y);
+                }
+            }
         }
 
         void create_tilemap(){
@@ -82,6 +155,7 @@ class Tilemap{
             param: y = Y coordinate to place BaseCharacter Object
             */  
 
+
             // If this object is of Entity type, add it to our vector of known entities
             if(object_to_add.type_obj == "Entity"){
 
@@ -89,13 +163,10 @@ class Tilemap{
                 entities_in_tilemap.push_back(&object_to_add);
             }
 
-
             tilemap_data.at(y).at(x).push_back(&object_to_add);
             object_to_add.set_position(x, y);
-
-            
-
             sort(tilemap_data.at(y).at(x).begin(), tilemap_data.at(y).at(x).end(), compare);
+            
         }
 
         void delete_obj(BaseCharacter &object_to_delete, int xPos = -1, int yPos = -1, bool deconstruct = false){
@@ -372,6 +443,218 @@ class Tilemap{
             return tilemap_data.at(y).at(x).at(z);
 
         }
+
+};
+
+
+class TilemapLoader{
+
+    string targ_path;
+
+    fstream file_stream;
+
+    map<string, vector<pair<pair<int, int>, BaseCharacter*>>> file_contents;
+    map<string, BaseCharacter*> map_of_tile_names;
+
+    public:
+
+        TilemapLoader(string new_targ_path, map<string, BaseCharacter*>& targ_map_of_tile_names){
+
+            targ_path = new_targ_path;
+            map_of_tile_names = targ_map_of_tile_names;
+        }
+
+        
+        void save_file(Tilemap& tilemap){
+            
+            file_contents.clear();
+
+            BaseCharacter* targ_obj;
+
+            for(int y = 0; y < tilemap.tilemap_data.size(); y++){
+
+                for(int x = 0; x < tilemap.tilemap_data.at(y).size(); x++){
+
+                    for(int z = 0; z < tilemap.tilemap_data.at(y).at(x).size(); z++){
+                        
+                        //targ_obj = tilemap.tilemap_data.at(y).at(x).at(z);
+                        targ_obj = tilemap.getObj(x, y, z);
+
+                        if(targ_obj->type_obj != "Player"){
+
+                            if(file_contents.find(targ_obj->name) != file_contents.end()){
+                                
+                                file_contents[targ_obj->name].push_back(pair<pair<int, int>, BaseCharacter*>{pair<int, int>{x, y}, targ_obj});
+                                continue;
+                            }
+                            
+                            file_contents[targ_obj->name] = vector<pair<pair<int, int>, BaseCharacter*>>{{pair<int, int>{x, y}, targ_obj}};
+                            continue;
+                            
+                        }
+
+                    }
+                }
+            }
+        
+
+            file_stream.open(targ_path, ios::out);
+
+            if(file_stream.is_open()){
+
+                int count {0};
+                int max {200};
+
+                file_stream << "#" << tilemap.width << ":" << tilemap.height << "\n";
+
+                for(pair<string, vector<pair<pair<int, int>, BaseCharacter*>>> element : file_contents){
+                    
+
+                    /*
+                    if(count + element.first.length() + 2 > max){
+                        count = element.first.length() + 2;
+                        file_stream << "\n";
+                    }
+
+                    */
+
+                    file_stream << "#" << element.first << "\n";
+                    //count + element.first.length() + 2;
+
+                    for(pair<pair<int, int>, BaseCharacter*> coordinates : element.second){
+
+                        /*
+
+                        if(count + 4 > max){
+                            count = 4;
+                            file_stream << "\n";
+                        }
+            
+                        */
+
+                        file_stream << coordinates.first.first << "," << coordinates.first.second << " #" << coordinates.second << "\n";
+                        //count += 4;
+                    }
+                }
+
+                file_stream.close();
+
+            }
+        }
+
+        Tilemap load_file(Tilemap& tilemap){
+
+            file_stream.open(targ_path, ios::in);
+
+            if(file_stream.is_open()){
+                
+                int xPos;
+                int yPos;
+                int i = 0;
+                int width, height;
+                string tile_name = "";
+                string line;
+                string targ_num = "";
+                string first_int = "";
+                string second_int = "";
+
+                //BaseCharacter* new_obj;
+
+                getline(file_stream, line);
+                
+                // Accessing size of the new Tilemap
+                width = 0;
+                height = 0;
+                i = 1;
+
+                targ_num = "";
+
+                while(line.substr(i, 1) != ":"){
+                    targ_num += line.substr(i, 1);
+                    i += 1;
+                }
+
+                width = stoi(targ_num);
+                targ_num = "";
+                i += 1; // Skip past ":"
+
+                while(i < line.length()){
+                    targ_num += line.substr(i, 1);
+                    i += 1;
+                }
+
+                height = stoi(targ_num);
+
+                //Loop through the Tilemap and delete the objects from memory so we don't have memory leaks
+                for(int y = 0; y < tilemap.height; y++){
+
+                    for(int x = 0; x < tilemap.tilemap_data.at(y).size(); x++){
+
+                        for(int z = 0; z < tilemap.tilemap_data.at(y).at(x).size(); z++){
+
+                            tilemap.delete_obj(*tilemap.getObj(x, y, z), true);
+                        }
+                    }
+                }
+
+
+                tilemap = Tilemap(width, height);
+
+                // Start parsing text file
+                while(getline(file_stream, line)){
+
+                    line = remove_character(line, ' ');
+
+                    if(line.length() > 0){
+
+                        if(line.substr(0, 1) == "#"){
+
+                            line = line.substr(1, line.length());
+
+                            i = 0;
+                            tile_name = "";
+
+                            while(i < line.length()){
+                                tile_name += line.substr(i, 1);
+                                i += 1;
+                            }
+
+                            continue;
+                        }
+
+                        targ_num = "";
+                        i = 0;
+
+                        while(i < line.length() && line.substr(i, 1) != ","){
+                            targ_num += line.substr(i, 1);
+                            i += 1;
+                        }
+
+                        i += 1; //Skip past ','
+
+                        xPos = stoi(targ_num);
+                        targ_num = "";
+
+                        while(i < line.length() && line.substr(i, 1) != "#"){
+                            targ_num += line.substr(i, 1);
+                            i += 1;
+                        }
+
+                        yPos = stoi(targ_num);
+                        
+                        BaseCharacter* new_obj = new BaseCharacter(*map_of_tile_names[tile_name]); 
+
+                        tilemap.add(*new_obj, xPos, yPos);
+                    }
+                }
+
+                file_stream.close();
+            }
+
+            return tilemap;
+
+        }
+
 
 };
 
