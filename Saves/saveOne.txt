@@ -1,9 +1,0 @@
-String{MyName:Joel}
-
-Int{Age:18}
-
-Vector<String>{Likes:Band,Computers,Art}
-
-Map{Proficiency:[BTrombone:4],[BSax:9]}
-
-String{Favorite_instrument:BTrombone}

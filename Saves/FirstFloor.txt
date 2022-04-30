@@ -1,0 +1,8 @@
+#4:4
+#Goblin
+2,3 #0x19bf9cce6c0
+#Wall
+1,1 #0x19bf9cce580
+2,1 #0x19bf9cce580
+1,2 #0x19bf9cce580
+2,2 #0x19bf9cce580

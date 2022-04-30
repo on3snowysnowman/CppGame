@@ -1,20 +1,29 @@
-#include "FileHandler.cpp"
 
+#include<iostream>
 using namespace std;
-
-int main(){
-
-    FileHandler file_handler;
-    vector<vector<string>> save_contents {
-                                    {vector<string>{"String", "MyName", "Joel"}},
-                                    {vector<string>{"Int", "Age", "18"}}
-                                    };
-
-    file_handler.set_path("Saves/testSave.txt");
-    file_handler.save_file(save_contents);
-    file_handler.load_file();
-    cout << file_handler.get_int("Age") << "\n";
-    cout << file_handler.get_string("MyName");
-
+ 
+class Point
+{
+private:
+    int x, y;
+public:
+    Point(int x1, int y1) { x = x1; y = y1; }
+ 
+    // Copy constructor
+    Point(const Point &p1) {x = p1.x; y = p1.y; }
+ 
+    int getX()            {  return x; }
+    int getY()            {  return y; }
+};
+ 
+int main()
+{
+    Point p1(10, 15); // Normal constructor is called here
+    Point p2 = p1; // Copy constructor is called here
+ 
+    // Let us access values assigned by constructors
+    cout << "p1.x = " << p1.getX() << ", p1.y = " << p1.getY();
+    cout << "\np2.x = " << p2.getX() << ", p2.y = " << p2.getY();
+ 
     return 0;
 }

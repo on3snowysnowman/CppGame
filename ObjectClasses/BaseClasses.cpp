@@ -18,6 +18,7 @@ class BaseCharacter{
                     //the higher the number, the higher the priority.
         bool traversable {true}; // Determines whether other BaseCharacter objects can be placed on the same 'tile' as this object
         bool should_move {false}; // If this object should be called to move inside of our input loop 
+        bool ignore_non_traversables {false}; // Whether this entity can traverse over non traversable objects
 
         int xPos = 0; // X position in the tilemap
         int yPos = 0; // Y position in the tllemap
@@ -30,6 +31,18 @@ class BaseCharacter{
             character = targ_character;
             priority = targ_priority;
             color = targ_color;
+        }
+
+        BaseCharacter(const BaseCharacter &old_obj){
+            
+            character = old_obj.character;
+            color = old_obj.color;
+            name = old_obj.name;
+            priority = old_obj.priority;
+            traversable = old_obj.traversable;
+            should_move = old_obj.should_move;
+            ignore_non_traversables = old_obj.ignore_non_traversables;
+
         }
 
         string get_name(){
@@ -68,8 +81,8 @@ class Entity: public BaseCharacter{
         int max_hitpoints; //Maximum hitpoints of this entity
         int damage {0}; // How much damage this entity deals
         bool movement_random {true}; // Determines whether this entity's movement is random, or it is tracking something
+        int move_chance {3}; // Chance out of 10 if it will move when called move
         
-
         Entity(){
 
             type_obj = "Entity";
@@ -93,9 +106,7 @@ class Entity: public BaseCharacter{
             traversable = is_traversable;
         }
 
-        void random_move(){
-            
-            
+        void random_move(){ 
         }
 
 };

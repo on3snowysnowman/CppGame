@@ -376,7 +376,10 @@ class Player: public Entity{
             hitpoints = targ_hitpoints;
             max_hitpoints = targ_max_hitpoints;
             color = "Blue";
+            type_obj = "Player";
             should_move = false;
+            traversable = false;
+            ignore_non_traversables = true;
 
         }
 
@@ -437,6 +440,9 @@ class Player: public Entity{
 
         }
 
+        void load_tilemap(Tilemap &tilemap_instance){
+            tilemap = &tilemap_instance;
+        }
 };
 
 #endif

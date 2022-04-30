@@ -32,6 +32,8 @@ class GameHandler{
             main_menu();
         }
 
+        void load_new_tilemap(){}
+
         void main_menu(){
             
             Selection selections(vector<string>{"Start Game", "Exit"});
@@ -52,7 +54,14 @@ class GameHandler{
                     if(choice == "Start Game"){
                         
                         camera->tilemap->add(*player, 1, 1);
-                        Enemy* goblin = new Enemy("Goblin", "G", 4, 10, 10, "Green");       
+                        Enemy* goblin = new Enemy("Goblin", "G", 4, 10, 10, "Green");
+                        Wall* wall = new Wall();
+                        camera->tilemap->add(*wall, 2, 1);
+                        camera->tilemap->add(*wall, 3, 1);
+                        camera->tilemap->add(*wall, 4, 1);
+                        camera->tilemap->add(*wall, 5, 1);
+                        camera->tilemap->add(*wall, 6, 1);
+                        camera->tilemap->add(*wall, 7, 1);
                         camera->tilemap->add(*goblin, 4, 4);
                         run = true;
                         input_loop();
@@ -80,8 +89,6 @@ class GameHandler{
 
                 player->handle_input(character);
                 camera->tilemap->move_all_entities();
-                endwin();
-                exit(0);
 
             }            
         }
