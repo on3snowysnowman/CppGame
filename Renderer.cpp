@@ -1,18 +1,14 @@
 #ifndef RENDERER
 #define RENDERER
 
+#include "HelpfulFunctions.cpp"
+
 #include <curses.h>
 #include <string>
 #include <map>
 #include <vector>
 
 using namespace std;
-
-int convert_to_thousand(int num){
-
-return int((num / 255.0) * 1000);
-
-}
 
 pair<pair<map<string, int>, map<string, vector<int>>>, int> create_colors(int count = 1){
 
@@ -90,6 +86,7 @@ public:
         start_color();
         curs_set(0); //Hide cursor
         raw();
+        nodelay(stdscr, true);
         scrollok(stdscr, true);
         idlok(stdscr, true);
         keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/

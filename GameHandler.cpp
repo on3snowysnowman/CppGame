@@ -1,8 +1,11 @@
 #include "Player.cpp"
+#include "HelpfulFunctions.cpp"
 #include "DisplayTool.cpp"
 #include "Camera.cpp" 
 
 #include <iostream>
+
+using namespace std;
 
 class GameHandler{
 
@@ -62,7 +65,7 @@ class GameHandler{
                         camera->tilemap->add(*wall, 5, 1);
                         camera->tilemap->add(*wall, 6, 1);
                         camera->tilemap->add(*wall, 7, 1);
-                        camera->tilemap->add(*goblin, 4, 4);
+                        camera->tilemap->add(*goblin, 1, 0);
                         run = true;
                         input_loop();
                     }
@@ -85,12 +88,15 @@ class GameHandler{
                 renderer->clear_content();
                 camera->flush();
                 renderer->render();
+                character = -1;
                 character = getch();
+                if(character > 0){
+                    player->handle_input(character);
+                }
 
-                player->handle_input(character);
                 camera->tilemap->move_all_entities();
-
+                delay(.01);        
             }            
         }
-
 };
+
