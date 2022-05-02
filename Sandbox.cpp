@@ -1,7 +1,7 @@
 #include "Player.cpp"
 #include "Camera.cpp" 
 
-#include "fstream"
+#include <fstream>
 
 template<typename T>
 T return_copy(T type){
@@ -15,12 +15,11 @@ class Sandbox{
 
     public:
 
-
         FloorTile floor_tile;
 
         Renderer renderer;
         DisplayTool display_tool = DisplayTool(renderer);
-        Tilemap tilemap = Tilemap(4, 4);
+        Tilemap tilemap = Tilemap(0, 0);
         Camera camera = Camera(tilemap, renderer, player);
         Player player = Player("Constructor", 10, 10, tilemap, display_tool);
 
@@ -28,12 +27,13 @@ class Sandbox{
         vector<string> choices {"Wall", "Floor", "Goblin", "Close Menu"};
 
         map<string, BaseCharacter*> map_of_tile_names {
-                                    {"Wall", new Wall},
-                                    {"Floor", new FloorTile},
-                                    {"Goblin", new Enemy("Goblin", "G", 4, 10, 10, "Green")}
+                                    {"Wall", new Wall()},
+                                    {"Floor", new FloorTile()},
+                                    {"Goblin", new Enemy("Goblin", "G", 4, 10, 10, 4, "Green")},
+                                    {"Void", new EmptyVoid()}
                                 };
 
-         TilemapLoader tilemap_loader = TilemapLoader("Saves/FirstFloor.txt", map_of_tile_names);
+        TilemapLoader tilemap_loader = TilemapLoader("Saves/FirstFloor.txt", map_of_tile_names);
  
         BaseCharacter* current_obj = map_of_tile_names["Wall"];
 
@@ -44,6 +44,8 @@ class Sandbox{
 
         void start(){
 
+            tilemap_loader.load_file(tilemap);
+            player.set_god_mode(true);
             tilemap.add(player, 0, 0);
             input_loop();
         }
@@ -54,13 +56,13 @@ class Sandbox{
 
             while(true){
                 
-
                 int xPos = player.xPos;
                 int yPos = player.yPos;
 
                 renderer.clear_content();
                 camera.flush();
                 renderer.add_new_line(2);
+
                 renderer.add_content("Selected Object: ", false);
                 renderer.add_content(current_obj->name, false, renderer.selection_color);
                 renderer.add_content(" (", false);
@@ -71,9 +73,12 @@ class Sandbox{
 
                 // Enter Key - Place object
                 if(character == 13){
-                    if(not tilemap.targ_is_in_vector("BaseCharacter", "type", xPos, yPos)){
-                        tilemap.add(*current_obj, player.xPos, player.yPos);
-                    }
+
+                    if(not current_obj->can_place_twice){
+                        if(not tilemap.targ_is_in_vector(current_obj->name, "name", xPos, yPos)){
+                            tilemap.add(*current_obj, player.xPos, player.yPos);
+                        }
+                    }                                        
                 }
 
                 // Backspace - Delete object
@@ -155,14 +160,24 @@ class Sandbox{
 
                 //. - Increase Radius
                 else if(character == 46){
-                    camera.radius += 1;
+                    camera.increase_radius();
                 }
 
                 //, - Decrease Radius
                 else if(character == 44){
-                    if(camera.radius - 1 >= 0){
-                        camera.radius -= 1;
-                    }
+                    camera.decrease_radius();
+                }
+
+                //[ - Add row to tilemap
+                else if(character == 91){
+
+                    tilemap.add_row();
+                }
+
+                //] - Add coloumn to tilemap
+                else if(character == 93){
+
+                    tilemap.add_column();
                 }
 
             }

@@ -19,18 +19,20 @@ class BaseCharacter{
         bool traversable {true}; // Determines whether other BaseCharacter objects can be placed on the same 'tile' as this object
         bool should_move {false}; // If this object should be called to move inside of our input loop 
         bool ignore_non_traversables {false}; // Whether this entity can traverse over non traversable objects
+        bool can_place_twice; // Whether two or more of these objects can be placed on the same tile when inside our sandbox constructor
 
         int xPos = 0; // X position in the tilemap
         int yPos = 0; // Y position in the tllemap
 
         BaseCharacter(){}
 
-        BaseCharacter(string targ_name, string targ_character = "0", int targ_priority = 0, string targ_color = "White"){
+        BaseCharacter(string targ_name, string targ_character = "0", int targ_priority = 0, string targ_color = "White", bool targ_place_twice = true){
 
             name = targ_name;
             character = targ_character;
             priority = targ_priority;
             color = targ_color;
+            can_place_twice = targ_place_twice;
         }
 
         BaseCharacter(const BaseCharacter &old_obj){
@@ -42,6 +44,7 @@ class BaseCharacter{
             traversable = old_obj.traversable;
             should_move = old_obj.should_move;
             ignore_non_traversables = old_obj.ignore_non_traversables;
+            type_obj = old_obj.type_obj;
 
         }
 
@@ -88,6 +91,21 @@ class Entity: public BaseCharacter{
 
             type_obj = "Entity";
             should_move = true;
+        }
+
+        Entity(const Entity& old_obj){
+            
+            character = old_obj.character;
+            color = old_obj.color;
+            name = old_obj.name;
+            priority = old_obj.priority;
+            traversable = old_obj.traversable;
+            should_move = old_obj.should_move;
+            ignore_non_traversables = old_obj.ignore_non_traversables;
+            type_obj = old_obj.type_obj;
+            move_chance = old_obj.move_chance;
+            hitpoints = old_obj.hitpoints;
+            max_hitpoints = old_obj.max_hitpoints;
         }
 
         int get_hitpoints(){

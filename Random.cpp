@@ -1,3 +1,6 @@
+#ifndef RANDOM
+#define RANDOM
+
 #include <stdlib.h>   
 #include <time.h>   
 #include <iostream>
@@ -11,5 +14,9 @@ void seed_random(){
 
 int get_random_num(int min, int max){
     
+    //Returns a random number between the range of min, and max - 1
+
     return rand() % max + min;
 }
+
+#endif

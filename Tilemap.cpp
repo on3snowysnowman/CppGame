@@ -155,8 +155,7 @@ class Tilemap{
             param: x = X coordinate to place BaseCharacter Object
             param: y = Y coordinate to place BaseCharacter Object
             */  
-
-
+           
             // If this object is of Entity type, add it to our vector of known entities
             if(object_to_add.type_obj == "Entity"){
 
@@ -168,6 +167,35 @@ class Tilemap{
             object_to_add.set_position(x, y);
             sort(tilemap_data.at(y).at(x).begin(), tilemap_data.at(y).at(x).end(), compare);
             
+        }
+
+        void add_row(){
+            
+            /*
+            Adds a new row to the bottom of the tilemap
+            */
+
+            vector<vector<BaseCharacter*>> vector_to_add;
+
+            for(int i = 0; i < width; i++){
+                vector_to_add.push_back(vector<BaseCharacter*>{});
+            }
+
+            height += 1;
+            tilemap_data.push_back(vector_to_add);
+        }
+
+        void add_column(){
+
+            /*
+            Adds a new row to the bottom of the tilemap
+            */
+
+            for(int i = 0; i < height; i++){
+                tilemap_data.at(i).push_back(vector<BaseCharacter*>{});
+            }
+
+            width += 1;
         }
 
         void delete_obj(BaseCharacter &object_to_delete, int xPos = -1, int yPos = -1, bool deconstruct = false){
@@ -259,7 +287,7 @@ class Tilemap{
                             for(int x = new_obj->xPos - 1; x <= x_max; x++){
 
                                 // Trying to access this object's tile
-                                if(y != 1 || x != 1){
+                                if(y != new_obj->yPos || x != new_obj->xPos){
 
                                     if(bound_check(x, y)){
 
@@ -268,12 +296,20 @@ class Tilemap{
                                 }
                             }
                         }
+                        
+                        if(move_options.size() == 0){
+                            continue;
+                        }
 
-                        pair<int, int> targ_move = move_options.at(get_random_num(0, move_options.size() - 1));
+                        else if(move_options.size() == 1){
+                            pair<int, int> targ_move = move_options.at(0);
+                            move(*element, targ_move.first, targ_move.second);
+                            continue;
+                        }
+
+                        pair<int, int> targ_move = move_options.at(get_random_num(0, move_options.size()));
                         move(*element, targ_move.first, targ_move.second);
-
                     }
-
                 }
             }
         }
@@ -643,7 +679,16 @@ class TilemapLoader{
 
                         yPos = stoi(targ_num);
                         
-                        BaseCharacter* new_obj = new BaseCharacter(*map_of_tile_names[tile_name]); 
+                        BaseCharacter* targ_obj = map_of_tile_names[tile_name];
+                        BaseCharacter* new_obj;
+
+                        if(targ_obj->type_obj == "BaseCharacter"){
+                            new_obj = new BaseCharacter(*targ_obj); 
+                        }
+
+                        else if(targ_obj->type_obj == "Entity"){
+                            new_obj = new Entity(*(Entity *) *&targ_obj);
+                        }
 
                         tilemap.add(*new_obj, xPos, yPos);
                     }

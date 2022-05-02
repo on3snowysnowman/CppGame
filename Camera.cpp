@@ -123,6 +123,19 @@ class Camera{
             }
         }
 
+        void increase_radius(){
+            
+            if(((radius * 2) + 1) < int(renderer->terminal_max_x / 2) && ((radius * 2) + 1) < int(renderer->terminal_max_y / 2)){
+                radius += 1;
+            }
+        }
+
+        void decrease_radius(){
+            if(radius - 1 >= 0){
+                radius -= 1;
+            }
+        }
+
         void load_tilemap(Tilemap& tilemap_instance){
 
             tilemap = &tilemap_instance;

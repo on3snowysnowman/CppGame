@@ -10,6 +10,7 @@ class FloorTile: public BaseCharacter{
             name = "Floor";
             color = "Kashmir Blue";
             priority = 0;
+            can_place_twice = false;
         }
 
 };
@@ -25,8 +26,24 @@ class Wall: public BaseCharacter{
             color = "Light Gray";
             priority = 1;
             traversable = false;
+            can_place_twice = false;
         }
             
 
 };
 
+
+class EmptyVoid: public BaseCharacter{
+
+    public:
+
+        EmptyVoid(){
+
+            character = "*";
+            name = "Void";
+            color = "Light Gray";
+            priority = 0;
+            traversable = false;
+            can_place_twice = false;
+        }
+};

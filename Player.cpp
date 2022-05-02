@@ -370,7 +370,8 @@ class Player: public Entity{
 
         Tilemap *tilemap;
         DisplayTool *display_tool;
-        bool accepting_input {true};
+        bool accepting_input {false};
+        bool run {false};
 
         Player(string targ_name, int targ_hitpoints, int targ_max_hitpoints, Tilemap &tilemap_instance, DisplayTool &display_tool_instance){
 
@@ -389,6 +390,16 @@ class Player: public Entity{
             ignore_non_traversables = false;
             
 
+        }
+
+        void pause_display(){
+            run = false;
+            accepting_input = false;
+        }
+
+        void start_display(){
+            run = true;
+            accepting_input = true;
         }
 
         void set_god_mode(bool set_boolean){
@@ -452,9 +463,10 @@ class Player: public Entity{
 
             //m - Menu
             else if(character == 109){
-
+                
+                pause_display();
                 settings(*display_tool->renderer, *display_tool);
-
+                start_display();
             }
 
         }

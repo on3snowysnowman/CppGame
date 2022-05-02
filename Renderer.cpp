@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <iostream>
 
 using namespace std;
 
@@ -59,6 +60,9 @@ class Renderer{
 
 public:
 
+    int terminal_max_y;
+    int terminal_max_x;
+
     map<string, int> color_map; // This gives us our list of color names to their respective pairs
     map<string, vector<int>> color_rgb_map; // This gives us our list of color names to their respective rgb values
     int current_color_pair {1}; // Number of the color pair we are currently on
@@ -86,11 +90,13 @@ public:
         start_color();
         curs_set(0); //Hide cursor
         raw();
-        //nodelay(stdscr, true);
         scrollok(stdscr, true);
         idlok(stdscr, true);
         keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/
         noecho();			/* Don't echo() while we do getch */
+        terminal_max_y = getmaxy(stdscr);
+        terminal_max_x = getmaxx(stdscr);
+
     
     }
 
