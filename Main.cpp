@@ -1,5 +1,11 @@
 #include "GameHandler.cpp"
 
+void main_input_loop(GameHandler* game_handler){
+
+    game_handler->input_loop();
+    
+}
+
 int main()
 {
     
@@ -11,6 +17,7 @@ int main()
     Camera camera(tilemap, renderer, player);
 
     GameHandler game_handler(renderer, display_tool, camera, player);
+    thread player_input_thread(main_input_loop, &game_handler); 
     game_handler.start();
 
     return 0;

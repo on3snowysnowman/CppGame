@@ -86,7 +86,7 @@ public:
         start_color();
         curs_set(0); //Hide cursor
         raw();
-        nodelay(stdscr, true);
+        //nodelay(stdscr, true);
         scrollok(stdscr, true);
         idlok(stdscr, true);
         keypad(stdscr, TRUE);		/* We get F1, F2 etc..		*/

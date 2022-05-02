@@ -4,6 +4,7 @@
 #include "Camera.cpp" 
 
 #include <iostream>
+#include <thread>
 
 using namespace std;
 
@@ -14,14 +15,15 @@ class GameHandler{
         Renderer* renderer;
         DisplayTool* display_tool;
         Camera* camera;
-        Player* player;
-        
+        Player* player;      
 
         //bool receiving_user_input {true}; // If we are receiving user input 
         bool run {false}; // If the game should be running
+        bool run_thread = true;
+        bool start_process {false};
 
         GameHandler(Renderer &renderer_instance, DisplayTool &display_tool_instance, Camera &camera_instance,
-                    Player &player_instance){
+                    Player &player_instance){ 
 
             renderer = &renderer_instance;
             display_tool = &display_tool_instance;
@@ -35,10 +37,8 @@ class GameHandler{
             main_menu();
         }
 
-        void load_new_tilemap(){}
-
         void main_menu(){
-            
+
             Selection selections(vector<string>{"Start Game", "Exit"});
             pair<int, int> last_index {0, 0};
 
@@ -67,7 +67,9 @@ class GameHandler{
                         camera->tilemap->add(*wall, 7, 1);
                         camera->tilemap->add(*goblin, 1, 0);
                         run = true;
-                        input_loop();
+                        start_process = true;
+                        game_loop();
+                        return;
                     }
 
                     else if(choice == "Exit"){
@@ -79,23 +81,34 @@ class GameHandler{
             }
         }
 
+        void refresh_content(){
+            renderer->clear_content();
+            camera->flush();
+            renderer->render();
+        }
+
         void input_loop(){
 
-            int character;
+            while(run_thread){
 
-            while(run){
-
-                renderer->clear_content();
-                camera->flush();
-                renderer->render();
-                character = -1;
-                character = getch();
-                if(character > 0){
-                    player->handle_input(character);
+                if(player->accepting_input){
+                    player->handle_input(getch());
+                    refresh_content();
                 }
+            }
+        }
 
-                camera->tilemap->move_all_entities();
-                delay(.01);        
+        void game_loop(){
+
+            while(true){
+
+                if(run){
+                    refresh_content();
+                    camera->tilemap->move_all_entities();
+                    delay(.2); 
+                    continue;
+                }      
+                delay(1);
             }            
         }
 };

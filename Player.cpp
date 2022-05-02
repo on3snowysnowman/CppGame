@@ -9,6 +9,7 @@
 #include "DisplayTool.cpp"
 
 #include <string>
+#include <thread>
 
 using namespace std;
 
@@ -296,7 +297,7 @@ void color_menu(Renderer &renderer, DisplayTool &display_tool){
 void settings(Renderer &renderer, DisplayTool &display_tool){
 
     pair<int, int> last_index {0, 0};
-    Selection selections(vector<string>{"Modify Terminal Colors", "Modify Colors", "Input Menu", "Close Menu"});
+    Selection selections(vector<string>{"Modify Terminal Colors", "Modify Colors", "Input Menu", "Close Menu", "Exit Game"});
 
     while(true){
 
@@ -352,6 +353,12 @@ void settings(Renderer &renderer, DisplayTool &display_tool){
             else if(choice == "Close Menu"){
                 return;
             }
+       
+            else if(choice == "Exit Game"){
+
+                endwin();
+                exit(0);
+            }
         }
     }
 }
@@ -363,7 +370,7 @@ class Player: public Entity{
 
         Tilemap *tilemap;
         DisplayTool *display_tool;
-
+        bool accepting_input {true};
 
         Player(string targ_name, int targ_hitpoints, int targ_max_hitpoints, Tilemap &tilemap_instance, DisplayTool &display_tool_instance){
 
@@ -379,8 +386,20 @@ class Player: public Entity{
             type_obj = "Player";
             should_move = false;
             traversable = false;
-            ignore_non_traversables = true;
+            ignore_non_traversables = false;
+            
 
+        }
+
+        void set_god_mode(bool set_boolean){
+            if(set_boolean){
+                ignore_non_traversables = true;
+                invulnerable = true;
+                return;
+            }
+
+            ignore_non_traversables = false;
+            invulnerable = false;
         }
 
         void change_health(int amount){

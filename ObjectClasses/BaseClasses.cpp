@@ -82,6 +82,7 @@ class Entity: public BaseCharacter{
         int damage {0}; // How much damage this entity deals
         bool movement_random {true}; // Determines whether this entity's movement is random, or it is tracking something
         int move_chance {3}; // Chance out of 10 if it will move when called move
+        bool invulnerable = false;
         
         Entity(){
 
