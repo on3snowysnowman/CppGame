@@ -234,6 +234,23 @@ class Tilemap{
 
         }
 
+        void delete_all(vector<BaseCharacter*> black_list){
+
+            for(vector<vector<BaseCharacter*>> row : tilemap_data){
+
+                for(vector<BaseCharacter*> column : row){
+
+                    for(BaseCharacter* stack : column){
+                        if(find(black_list.begin(), black_list.end(), stack) == black_list.end()){
+
+                            cout << "Deleting Object: " << stack->name << "\n";
+                            delete_obj(*stack, stack->xPos, stack->yPos, true);
+                        }
+                    }
+                }
+            }
+        }
+
         void move(BaseCharacter &object_to_move, int x, int y){
             
             /*
@@ -599,6 +616,11 @@ class TilemapLoader{
 
                 getline(file_stream, line);
                 
+                if(line.length() == 0){
+                    tilemap = Tilemap(10, 10);
+                    return tilemap;
+                }
+
                 // Accessing size of the new Tilemap
                 width = 0;
                 height = 0;

@@ -24,7 +24,7 @@ class Sandbox{
         Player player = Player("Constructor", 10, 10, tilemap, display_tool);
 
         string targ_path = "Saves/FirstFloor.txt";
-        vector<string> choices {"Wall", "Floor", "Goblin", "Close Menu"};
+        vector<string> choices {"Wall", "Floor", "Goblin", "Void", "Close Menu"};
 
         map<string, BaseCharacter*> map_of_tile_names {
                                     {"Wall", new Wall()},
@@ -111,24 +111,24 @@ class Sandbox{
                     tilemap.move(player, xPos, yPos + 1);
                 }
 
-                //a - Move Left
+                // a - Move Left
                 else if(character == 97){
 
                     tilemap.move(player, xPos - 1, yPos);
                 }
 
-                //m - Menu
-                else if(character == 109){
+                // Escape - Menu
+                else if(character == 27){
                     menu();
                 }
 
-                //i - Select new object menu
+                // i - Select new object menu
                 else if(character == 105){
 
                     select_new_obj_menu();
                 }
 
-                //f - Fill tilemap with selected object
+                // f - Fill tilemap with selected object
                 else if(character == 102){
 
                     Selection selections(vector<string>{"Yes", "Cancel"});
@@ -158,23 +158,29 @@ class Sandbox{
                     }
                 }
 
-                //. - Increase Radius
+                // c -  Clear menu
+                else if(character == 99){
+
+                    clear_menu();
+                }
+
+                // . - Increase Radius
                 else if(character == 46){
                     camera.increase_radius();
                 }
 
-                //, - Decrease Radius
+                // , - Decrease Radius
                 else if(character == 44){
                     camera.decrease_radius();
                 }
 
-                //[ - Add row to tilemap
+                // [ - Add row to tilemap
                 else if(character == 91){
 
                     tilemap.add_row();
                 }
 
-                //] - Add coloumn to tilemap
+                // ] - Add coloumn to tilemap
                 else if(character == 93){
 
                     tilemap.add_column();
@@ -269,6 +275,34 @@ class Sandbox{
                     
                 }
 
+            }
+        }
+
+        void clear_menu(){
+
+            Selection selections(vector<string>{"Clear Selected Item", "Clear Entire Map"});
+            pair<int, int> last_index {0, 0};
+
+            while(true){
+
+                clear();
+                renderer.clear_content();
+
+                last_index = display_tool.dynamic_selection(selections, last_index.first, "Choose one of the Following");
+
+                if(last_index.second == 1){
+
+                    string choice = selections.content.at(last_index.first);
+
+                    if(choice == "Clear Selected Item"){
+                    }
+
+                    else if(choice == "Clear Entire Map"){
+
+                        tilemap.delete_all({&player});
+                        return;
+                    }
+                }
             }
         }
 

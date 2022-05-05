@@ -15,7 +15,8 @@ int main()
      map<string, BaseCharacter*> map_of_tile_names {
                                     {"Wall", new Wall},
                                     {"Floor", new FloorTile},
-                                    {"Goblin", new Enemy("Goblin", "G", 4, 10, 10, 4, "Green")}
+                                    {"Goblin", new Enemy("Goblin", "G", 4, 10, 10, 4, "Green")},
+                                    {"Void", new EmptyVoid()}
                                 };
     
     Renderer renderer;

@@ -42,7 +42,7 @@ class EmptyVoid: public BaseCharacter{
             character = "*";
             name = "Void";
             color = "Light Gray";
-            priority = 0;
+            priority = 1;
             traversable = false;
             can_place_twice = false;
         }
