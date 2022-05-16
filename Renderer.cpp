@@ -20,6 +20,7 @@ map<string, vector<int>> color_rgb_vals = {
                                         {"Blue", vector<int>{0, 120, 255}},
                                         {"Kashmir Blue", vector<int>{78, 94, 160}},
                                         {"Light Blue", vector<int>{74, 231, 255}},
+                                        {"Brown", vector<int>{102, 65, 34}},
                                         {"Red", vector<int>{255, 75, 50}},
                                         {"Green", vector<int>{70, 255, 81}},
                                         {"Teal", vector<int>{74, 255, 190}},

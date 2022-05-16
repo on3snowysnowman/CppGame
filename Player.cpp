@@ -4,6 +4,7 @@
 #include "ObjectClasses/TileClasses.cpp"
 #include "ObjectClasses/EntityClasses.cpp"
 #include "ObjectClasses/ItemClasses.cpp"
+#include "ObjectClasses/InteractableClasses.cpp"
 #include "Tilemap.cpp"
 #include "Renderer.cpp"
 #include "DisplayTool.cpp"

@@ -7,7 +7,7 @@ class Weapon: public BaseCharacter{
         Weapon(){
 
             character  = "W";
-            name = "Weapon";
+            type_obj = "Weapon";
             color = "Orange";
             priority = 1;
         }

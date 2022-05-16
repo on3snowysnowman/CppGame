@@ -234,20 +234,95 @@ class Tilemap{
 
         }
 
-        void delete_all(vector<BaseCharacter*> black_list){
+        void delete_all_of_obj(BaseCharacter& object_to_delete, bool deconstruct = false){
+            
+            int x, y = 0;
+
+            vector<BaseCharacter*> objects_to_deconstruct;
 
             for(vector<vector<BaseCharacter*>> row : tilemap_data){
+
+                x = 0;
 
                 for(vector<BaseCharacter*> column : row){
 
                     for(BaseCharacter* stack : column){
+
+                        if(stack->name == object_to_delete.name){
+
+                            delete_obj(*stack, x, y, false);
+                            if(find(objects_to_deconstruct.begin(), objects_to_deconstruct.end(), stack) == objects_to_deconstruct.end()){
+                                objects_to_deconstruct.push_back(stack);
+                            }
+                        }
+
+                    }
+
+                    x += 1;
+                }
+                
+                y += 1;
+            }
+
+            if(not deconstruct){
+                return;
+            }
+
+            BaseCharacter* targ_obj;
+
+            for(int i = 0; i < objects_to_deconstruct.size(); i++){
+                
+                targ_obj = objects_to_deconstruct.at(i);
+                objects_to_deconstruct.erase(objects_to_deconstruct.begin() + i);
+                delete targ_obj;
+            }
+
+        }
+
+        void delete_all(vector<BaseCharacter*> black_list, bool deconstruct = false){
+
+            int x, y = 0;
+
+            vector<BaseCharacter*> objects_to_deconstruct;
+
+            for(vector<vector<BaseCharacter*>> row : tilemap_data){
+
+                x = 0;
+
+                for(vector<BaseCharacter*> column : row){
+
+                    for(BaseCharacter* stack : column){
+                       
                         if(find(black_list.begin(), black_list.end(), stack) == black_list.end()){
 
-                            cout << "Deleting Object: " << stack->name << "\n";
-                            delete_obj(*stack, stack->xPos, stack->yPos, true);
+                            if(find(objects_to_deconstruct.begin(), objects_to_deconstruct.end(), stack) == objects_to_deconstruct.end()){
+                                objects_to_deconstruct.push_back(stack);
+                            }
+                            delete_obj(*stack, x, y, false);
                         }
+
+                        cout << "\n";
                     }
+
+                    x += 1;
                 }
+                
+                y += 1;
+            }
+
+            if(not deconstruct){
+                return;
+            }
+
+            cout << "Before Deconstruct\n";
+
+            BaseCharacter* targ_obj;
+
+            for(int i = 0; i < objects_to_deconstruct.size(); i++){
+                
+                targ_obj = objects_to_deconstruct.at(i);
+                objects_to_deconstruct.erase(objects_to_deconstruct.begin() + i);
+                delete targ_obj;
             }
         }
 
@@ -516,6 +591,7 @@ class TilemapLoader{
 
             targ_path = new_targ_path;
             map_of_tile_names = targ_map_of_tile_names;
+
         }
 
         
@@ -656,13 +732,12 @@ class TilemapLoader{
                     }
                 }
 
-
                 tilemap = Tilemap(width, height);
 
                 // Start parsing text file
                 while(getline(file_stream, line)){
 
-                    line = remove_character(line, ' ');
+                    //line = remove_character(line, ' ');
 
                     if(line.length() > 0){
 
@@ -704,15 +779,23 @@ class TilemapLoader{
                         BaseCharacter* targ_obj = map_of_tile_names[tile_name];
                         BaseCharacter* new_obj;
 
-                        if(targ_obj->type_obj == "BaseCharacter"){
+                        if (targ_obj->type_obj == "Entity"){
+                            new_obj = new Entity(*(Entity *) targ_obj);
+                        }
+
+
+                        else if(targ_obj->type_obj == "Liquid"){
+
+                            new_obj = new Liquid(*(Liquid *) targ_obj);
+                        }
+
+                        else{
                             new_obj = new BaseCharacter(*targ_obj); 
                         }
-
-                        else if(targ_obj->type_obj == "Entity"){
-                            new_obj = new Entity(*(Entity *) *&targ_obj);
-                        }
+                        
 
                         tilemap.add(*new_obj, xPos, yPos);
+
                     }
                 }
 

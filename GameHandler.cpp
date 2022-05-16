@@ -19,8 +19,7 @@ class GameHandler{
         Player* player;      
 
         //bool receiving_user_input {true}; // If we are receiving user input
-        bool run_thread = true;
-        bool lock_refresh = false;
+        bool run = true;
 
         GameHandler(Renderer &renderer_instance, DisplayTool &display_tool_instance, Camera &camera_instance,
                     Player &player_instance, TilemapLoader& tilemap_loader_instance){ 
@@ -57,9 +56,13 @@ class GameHandler{
 
                     if(choice == "Start Game"){
                         
-                        //Remove our player from the tilemap so that they are not deconstrcuted in the following delete statment 
-                        camera->tilemap->delete_obj(*player);
-                        
+
+
+                        if(find(camera->tilemap->entities_in_tilemap.begin(), camera->tilemap->entities_in_tilemap.end(), player) != camera->tilemap->entities_in_tilemap.end()){
+                            //Remove our player from the tilemap so that they are not deconstrcuted in the following delete statment 
+                            camera->tilemap->delete_obj(*player);
+                        }
+   
                         tilemap_loader->load_file(*camera->tilemap);
 
                         if(player->xPos < camera->tilemap->width && player->yPos < camera->tilemap->height){
@@ -71,20 +74,7 @@ class GameHandler{
 
                         player->load_tilemap(*camera->tilemap);
 
-
-                        /*
-                        camera->tilemap->add(*player, 0, 0);
-                        Enemy* goblin = new Enemy("Goblin", "G", 4, 10, 10, 4, "Green");
-                        Wall* wall = new Wall();
-                        camera->tilemap->add(*wall, 2, 1);
-                        camera->tilemap->add(*wall, 3, 1);
-                        camera->tilemap->add(*wall, 4, 1);
-                        camera->tilemap->add(*wall, 5, 1);
-                        camera->tilemap->add(*wall, 6, 1);
-                        camera->tilemap->add(*wall, 7, 1);
-                        camera->tilemap->add(*goblin, 2, 0);
-                        */
-                        player->run = true;
+                        //player->run = true;
                         player->accepting_input = true;
                         game_loop();
                         return;
@@ -99,21 +89,14 @@ class GameHandler{
             }
         }
 
-        bool refresh_content(){
+        void refresh_content(){
             
-            // If lock_refresh is false, then we can refresh the screen
-            if(not lock_refresh){
-                // Set the lock to true so if any other function tries to access this method while we are refreshing they can't
-                lock_refresh = true;
-                renderer->clear_content();
-                camera->flush();
-                renderer->render();
-                lock_refresh = false;
-                return true;
-            }
-            return false;
-            
+            renderer->clear_content();
+            camera->flush();
+            renderer->render();  
         }
+
+        /*
 
         void input_loop(){
 
@@ -131,19 +114,16 @@ class GameHandler{
                 delay(.3);
             }
         }
+
+        */
         
         void game_loop(){
 
-            while(true){
+            while(run){
 
-                if(player->run){
-
-                    refresh_content();
-                    camera->tilemap->move_all_entities();
-                    delay(.2); 
-                    continue;
-                }      
-                delay(1);
+                refresh_content();
+                camera->tilemap->move_all_entities();
+                player->handle_input(getch());
             }            
         }
 };

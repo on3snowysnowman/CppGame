@@ -17,7 +17,7 @@ class Camera{
             tilemap = &tilemap_instance;
             renderer = &renderer_instance;
             focus_obj = &targ_focus_obj;
-            radius = 5;
+            radius = 7;
             
         }
 

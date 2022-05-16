@@ -3,19 +3,9 @@
 
 #include <fstream>
 
-template<typename T>
-T return_copy(T type){
-
-    T new_obj = type;
-    return new_obj;
-}
-
-
 class Sandbox{
 
     public:
-
-        FloorTile floor_tile;
 
         Renderer renderer;
         DisplayTool display_tool = DisplayTool(renderer);
@@ -24,25 +14,39 @@ class Sandbox{
         Player player = Player("Constructor", 10, 10, tilemap, display_tool);
 
         string targ_path = "Saves/FirstFloor.txt";
-        vector<string> choices {"Wall", "Floor", "Goblin", "Void", "Close Menu"};
+        vector<string> main_choices = {"Ground/Floor", "Vegetation", "Walls", "Liquids", "Close Menu"};
+        vector<string> floors = {"Dirt", "Void", "Unseeable", " <- Back"};
+        vector<string> vegetation = {"Grass", " <- Back"};
+        vector<string> walls = {"Stone Wall", "Wood Door"," <- Back"};
+        vector<string> liquids = {"Water", "Magma"," <- Back"};
 
         map<string, BaseCharacter*> map_of_tile_names {
-                                    {"Wall", new Wall()},
-                                    {"Floor", new FloorTile()},
-                                    {"Goblin", new Enemy("Goblin", "G", 4, 10, 10, 4, "Green")},
-                                    {"Void", new EmptyVoid()}
-                                };
+                                {"Stone Wall", new StoneWall()},
+                                {"Wood Door", new WoodDoor()},
+                                {"Dirt", new Dirt()},
+                                {"Grass", new Grass()},
+                                {"Water", new Water(5)},
+                                {"Magma", new Magma(5)},
+                                {"Goblin", new Enemy("Goblin", "G", 4, 10, 10, 4, "Green")},
+                                {"Unseeable", new Unseeable()},
+                                {"Void", new EmptyVoid()}
+                            };
 
         TilemapLoader tilemap_loader = TilemapLoader("Saves/FirstFloor.txt", map_of_tile_names);
  
-        BaseCharacter* current_obj = map_of_tile_names["Wall"];
+        BaseCharacter* current_obj = map_of_tile_names["Stone Wall"];
 
         Sandbox(){
-            
+
             start();
         }
 
         void start(){
+
+            //for(pair<string, BaseCharacter*> element: map_of_tile_names){
+                //choices.push_back(element.first);
+            //}
+            //choices.push_back("Close Menu");
 
             tilemap_loader.load_file(tilemap);
             player.set_god_mode(true);
@@ -76,7 +80,25 @@ class Sandbox{
 
                     if(not current_obj->can_place_twice){
                         if(not tilemap.targ_is_in_vector(current_obj->name, "name", xPos, yPos)){
-                            tilemap.add(*current_obj, player.xPos, player.yPos);
+                            
+                            BaseCharacter* targ_obj;
+
+                            if(current_obj->type_obj == "Entity"){
+
+                                targ_obj = new Entity(*(Entity *) current_obj);
+                            }
+
+                            else if(current_obj->type_obj == "Liquid"){
+
+                                targ_obj = new Liquid(*(Liquid *) current_obj);
+                            }
+
+                            else{
+                                
+                                targ_obj = new BaseCharacter(*current_obj);
+                            }
+
+                            tilemap.add(*targ_obj, player.xPos, player.yPos);
                         }
                     }                                        
                 }
@@ -192,7 +214,7 @@ class Sandbox{
 
         void select_new_obj_menu(){
 
-            Selection selections(choices);
+            Selection selections(main_choices);
             pair<int, int> last_index {0, 0};
 
             while(true){
@@ -206,15 +228,151 @@ class Sandbox{
                 renderer.add_content(")");
                 renderer.add_new_line();
 
-                last_index = display_tool.dynamic_selection(selections, last_index.first, "Choose a new Object");
+                last_index = display_tool.dynamic_selection(selections, last_index.first);
 
                 if(last_index.second == 1){
                     
                     string choice = selections.content.at(last_index.first);
 
-                    if(map_of_tile_names.find(choice) != map_of_tile_names.end()){
-                        current_obj = map_of_tile_names[choice];
-                        return;
+                    if(choice == "Ground/Floor"){
+
+                        Selection second_selections(floors);
+                        pair<int, int> second_last_index {0, 0};
+
+                        while(true){
+                            
+                            clear();
+                            renderer.clear_content();
+                            renderer.add_content("Current Selected Object: ", false);
+                            renderer.add_content(current_obj->name, false, renderer.selection_color);
+                            renderer.add_content(" (", false);
+                            renderer.add_content(current_obj->character, false, current_obj->color);
+                            renderer.add_content(")");
+                            renderer.add_new_line();
+
+                            second_last_index = display_tool.dynamic_selection(second_selections, second_last_index.first, "Select a new object");
+
+                            if(second_last_index.second == 1){
+
+                                choice = second_selections.content.at(second_last_index.first);
+
+                                if(map_of_tile_names.find(choice) != map_of_tile_names.end()){
+                                    current_obj = map_of_tile_names[choice];
+                                    return;
+                                }
+
+                                else if(choice == " <- Back"){
+                                    break;
+                                }
+                            }
+
+                        }
+
+                    }
+
+                    else if(choice == "Vegetation"){
+
+                        Selection second_selections(vegetation);
+                        pair<int, int> second_last_index {0, 0};
+
+                        while(true){
+                            
+                            clear();
+                            renderer.clear_content();
+                            renderer.add_content("Current Selected Object: ", false);
+                            renderer.add_content(current_obj->name, false, renderer.selection_color);
+                            renderer.add_content(" (", false);
+                            renderer.add_content(current_obj->character, false, current_obj->color);
+                            renderer.add_content(")");
+                            renderer.add_new_line();
+
+                            second_last_index = display_tool.dynamic_selection(second_selections, second_last_index.first, "Select a new object");
+
+                            if(second_last_index.second == 1){
+
+                                choice = second_selections.content.at(second_last_index.first);
+
+                                if(map_of_tile_names.find(choice) != map_of_tile_names.end()){
+                                    current_obj = map_of_tile_names[choice];
+                                    return;
+                                }
+
+                                else if(choice == " <- Back"){
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+
+                    else if(choice == "Walls"){
+
+                        Selection second_selections(walls);
+                        pair<int, int> second_last_index {0, 0};
+
+                        while(true){
+                            
+                            clear();
+                            renderer.clear_content();
+                            renderer.add_content("Current Selected Object: ", false);
+                            renderer.add_content(current_obj->name, false, renderer.selection_color);
+                            renderer.add_content(" (", false);
+                            renderer.add_content(current_obj->character, false, current_obj->color);
+                            renderer.add_content(")");
+                            renderer.add_new_line();
+
+                            second_last_index = display_tool.dynamic_selection(second_selections, second_last_index.first, "Select a new object");
+
+                            if(second_last_index.second == 1){
+
+                                choice = second_selections.content.at(second_last_index.first);
+
+                                if(map_of_tile_names.find(choice) != map_of_tile_names.end()){
+                                    current_obj = map_of_tile_names[choice];
+                                    return;
+                                }
+
+                                else if(choice == " <- Back"){
+                                    break;
+                                }
+                            }
+
+                        }
+                    }
+
+                    else if(choice == "Liquids"){
+
+                        Selection second_selections(liquids);
+                        pair<int, int> second_last_index {0, 0};
+
+                        while(true){
+                            
+                            clear();
+                            renderer.clear_content();
+                            renderer.add_content("Current Selected Object: ", false);
+                            renderer.add_content(current_obj->name, false, renderer.selection_color);
+                            renderer.add_content(" (", false);
+                            renderer.add_content(current_obj->character, false, current_obj->color);
+                            renderer.add_content(")");
+                            renderer.add_new_line();
+
+                            second_last_index = display_tool.dynamic_selection(second_selections, second_last_index.first, "Select a new object");
+
+                            if(second_last_index.second == 1){
+
+                                choice = second_selections.content.at(second_last_index.first);
+
+                                if(map_of_tile_names.find(choice) != map_of_tile_names.end()){
+                                    current_obj = map_of_tile_names[choice];
+                                    return;
+                                }
+
+                                else if(choice == " <- Back"){
+                                    break;
+                                }
+                            }
+
+                        }
                     }
 
                     else if(choice == "Close Menu"){
@@ -295,22 +453,24 @@ class Sandbox{
                     string choice = selections.content.at(last_index.first);
 
                     if(choice == "Clear Selected Item"){
+                        tilemap.delete_all_of_obj(*current_obj, true);
+                        return;
                     }
 
                     else if(choice == "Clear Entire Map"){
 
-                        tilemap.delete_all({&player});
+                        tilemap.delete_all({&player}, true);
                         return;
                     }
                 }
             }
         }
-
 };  
 
 
 int main(){
 
+    seed_random();
     Sandbox sandbox;
 
 }
